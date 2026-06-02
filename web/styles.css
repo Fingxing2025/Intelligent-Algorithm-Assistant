@@ -1451,3 +1451,66 @@ button.is-danger {
     white-space: normal;
   }
 }
+
+/* ===== AI 深度诊断报告 ===== */
+.diagnosis-ai-report-shell {
+  background: var(--bg);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--line);
+}
+
+.diagnosis-ai-report-shell.hidden {
+  display: none;
+}
+
+.diagnosis-ai-report-content {
+  line-height: 1.8;
+  color: var(--text);
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--panel-strong);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.diagnosis-ai-report-content h4 {
+  margin: 18px 0 8px;
+  font-size: 1.05rem;
+  color: var(--accent);
+}
+
+.diagnosis-ai-report-content h4:first-child {
+  margin-top: 0;
+}
+
+.diagnosis-ai-report-content p {
+  margin: 8px 0;
+  color: var(--text);
+}
+
+.diagnosis-ai-report-content strong {
+  color: var(--accent-strong);
+}
+
+.diagnosis-ai-report-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.diagnosis-ai-report-actions button {
+  padding: 8px 16px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border: 1px solid rgba(180, 79, 47, 0.16);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: background 0.15s;
+}
+
+.diagnosis-ai-report-actions button:hover {
+  background: rgba(180, 79, 47, 0.2);
+}

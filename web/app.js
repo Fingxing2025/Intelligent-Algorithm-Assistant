@@ -183,6 +183,10 @@ const elements = {
   diagWeakCategories: document.querySelector('#diag-weak-categories'),
   diagnosisCategories: document.querySelector('#diagnosis-categories'),
   diagnosisHistory: document.querySelector('#diagnosis-history'),
+  diagnosisAiReportShell: document.querySelector('#diagnosis-ai-report-shell'),
+  diagnosisAiReportStatus: document.querySelector('#diagnosis-ai-report-status'),
+  diagnosisAiReportContent: document.querySelector('#diagnosis-ai-report-content'),
+  regenerateDiagnosis: document.querySelector('#regenerate-diagnosis'),
 };
 
 function buildTree(templates) {
@@ -1505,6 +1509,134 @@ function render() {
   renderDetail();
 }
 
+// ========== AI 深度诊断报告 ==========
+
+async function generateAiDiagnosisReport() {
+  if (!hasAiPage || !elements.diagnosisAiReportShell) {
+    return;
+  }
+
+  const diagnosis = analyzeMastery();
+  if (diagnosis.totalAttempts === 0) {
+    if (elements.diagnosisAiReportStatus) {
+      elements.diagnosisAiReportStatus.textContent = '暂无数据';
+    }
+    return;
+  }
+
+  const apiKey = getExplainApiKey() || elements.aiApiKey?.value.trim();
+  if (!apiKey) {
+    if (elements.diagnosisAiReportStatus) {
+      elements.diagnosisAiReportStatus.textContent = '请先在 AI 分析区填写 API Key';
+    }
+    if (elements.diagnosisAiReportShell) {
+      elements.diagnosisAiReportShell.classList.remove('hidden');
+    }
+    if (elements.diagnosisAiReportContent) {
+      elements.diagnosisAiReportContent.innerHTML = '<p class="helper">需要 API Key 才能生成 AI 诊断报告。请在题目分析区填写 API Key 后重试。</p>';
+    }
+    return;
+  }
+
+  if (elements.diagnosisAiReportShell) {
+    elements.diagnosisAiReportShell.classList.remove('hidden');
+  }
+  if (elements.diagnosisAiReportStatus) {
+    elements.diagnosisAiReportStatus.textContent = 'AI 正在分析你的学习数据...';
+  }
+  if (elements.diagnosisAiReportContent) {
+    elements.diagnosisAiReportContent.innerHTML = '<p class="helper">正在调用 AI 模型，请稍候...</p>';
+  }
+
+  const { endpoint, model } = getStoredAiSettings();
+
+  // 构建传给 AI 的历史数据摘要
+  const weakCategories = Object.entries(diagnosis.categoryStats)
+    .filter(([, s]) => s.total > 0 && s.correct / s.total < 0.5)
+    .map(([cat, s]) => `${cat}：${s.correct}/${s.total} 正确（${Math.round(s.correct / s.total * 100)}%）`)
+    .join('\n');
+
+  const strongCategories = Object.entries(diagnosis.categoryStats)
+    .filter(([, s]) => s.total > 0 && s.correct / s.total >= 0.7)
+    .map(([cat, s]) => `${cat}：${s.correct}/${s.total} 正确（${Math.round(s.correct / s.total * 100)}%）`)
+    .join('\n');
+
+  const recentRecords = diagnosis.recentHistory
+    .map((r, i) => `${i + 1}. [${r.isCorrect ? '✓' : '✗'}] 题目："${r.problemSummary}" | 用户选："${r.userChoice}" | AI推荐："${r.aiTopTitle}"`)
+    .join('\n');
+
+  const systemPrompt = [
+    '你是算法学习诊断专家。你会收到一个学生的算法学习分析历史数据，请据此生成一份个性化学习诊断报告。',
+    '报告需要包含以下部分（使用 Markdown 格式）：',
+    '## 一、整体评估',
+    '对学生当前算法掌握情况的总体评价（1-2段）',
+    '## 二、掌握良好的专题',
+    '列出学生表现较好的算法专题，并说明其优势模式',
+    '## 三、需要加强的专题',
+    '列出薄弱专题，分析可能的原因（概念混淆？推理断层？迁移困难？）',
+    '## 四、具体学习建议',
+    '针对薄弱专题给出 3-5 条具体可操作的学习建议',
+    '## 五、学习趋势',
+    '根据近期记录分析进步或退步趋势',
+    '请用中文回答，语气鼓励但客观。',
+  ].join('\n');
+
+  const userPrompt = [
+    '以下是学生的算法学习分析数据：',
+    '',
+    `累计分析次数：${diagnosis.totalAttempts}`,
+    `总体正确率：${diagnosis.correctRate}%`,
+    '',
+    '=== 掌握良好的专题（正确率 ≥ 70%）===',
+    strongCategories || '无',
+    '',
+    '=== 薄弱专题（正确率 < 50%）===',
+    weakCategories || '无',
+    '',
+    '=== 最近分析记录 ===',
+    recentRecords || '无',
+    '',
+    '请据此生成完整的诊断报告。',
+  ].join('\n');
+
+  try {
+    const payload = await callAiChatProxy({
+      endpoint,
+      model,
+      apiKey,
+      temperature: 0.5,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+    });
+
+    const reportText = payload.choices?.[0]?.message?.content || 'AI 未返回有效报告内容。';
+
+    if (elements.diagnosisAiReportStatus) {
+      elements.diagnosisAiReportStatus.textContent = '报告生成完成';
+    }
+    if (elements.diagnosisAiReportContent) {
+      // 简单的 Markdown 转 HTML
+      const html = reportText
+        .replace(/</g, '<')
+        .replace(/>/g, '>')
+        .replace(/## ([^\n]+)/g, '<h4>$1</h4>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+      elements.diagnosisAiReportContent.innerHTML = html;
+    }
+  } catch (error) {
+    if (elements.diagnosisAiReportStatus) {
+      elements.diagnosisAiReportStatus.textContent = '报告生成失败';
+    }
+    if (elements.diagnosisAiReportContent) {
+      elements.diagnosisAiReportContent.innerHTML = `<p class="helper">AI 诊断报告生成失败：${escapeForHtml(error instanceof Error ? error.message : '未知错误')}</p>`;
+    }
+  }
+}
+
 // ========== 事件监听 ==========
 
 if (elements.keyword) { elements.keyword.addEventListener('input', e => { state.keyword = e.target.value; expandAllBranches(); render(); }); }
@@ -1559,7 +1691,8 @@ if (hasAiPage && elements.userTemplateChoice) {
 }
 
 // 诊断面板按钮
-if (hasAiPage && elements.runDiagnosis) { elements.runDiagnosis.addEventListener('click', () => renderDiagnosis()); }
+if (hasAiPage && elements.runDiagnosis) { elements.runDiagnosis.addEventListener('click', () => { renderDiagnosis(); generateAiDiagnosisReport(); }); }
+if (hasAiPage && elements.regenerateDiagnosis) { elements.regenerateDiagnosis.addEventListener('click', () => generateAiDiagnosisReport()); }
 if (hasAiPage && elements.clearDiagnosis) { elements.clearDiagnosis.addEventListener('click', () => { if (window.confirm('确认清空所有分析历史记录？此操作不可撤销。')) { clearAllAnalysisHistory(); renderDiagnosis(); showActionToast('分析历史已清空'); } }); }
 
 if (elements.resetView) { elements.resetView.addEventListener('click', () => { state.keyword = ''; state.activeCategory = ''; state.selectedId = null; state.expandedKeys.clear(); elements.keyword.value = ''; render(); }); }
