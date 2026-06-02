@@ -127,6 +127,15 @@
                 </div>
               </div>
 
+              <div>
+                <label for="user-template-choice">你的模板选择（选填）</label>
+                <div class="autocomplete-wrapper">
+                  <input id="user-template-choice" type="text" placeholder="输入你认为适合的模板名，AI将帮你判断是否正确" autocomplete="off" />
+                  <div id="template-autocomplete" class="autocomplete-dropdown hidden"></div>
+                </div>
+                <p class="helper">在调用AI分析前，先猜一个模板。AI除了推荐模板，还会评估你的选择是否正确并给出反馈。</p>
+              </div>
+
               <div id="image-preview-shell" class="image-preview-shell hidden">
                 <img id="image-preview" alt="题目图片预览" />
               </div>
@@ -167,6 +176,46 @@
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        <!-- 学习诊断面板 -->
+        <section id="diagnosis-panel" class="diagnosis-panel">
+          <div class="diagnosis-header">
+            <div>
+              <p class="eyebrow">Learning Diagnosis</p>
+              <h3>学习诊断</h3>
+            </div>
+            <div class="diagnosis-header-actions">
+              <span id="diagnosis-status" class="recommend-status">基于历史分析记录</span>
+              <button id="run-diagnosis" type="button">生成诊断报告</button>
+              <button id="clear-diagnosis" type="button">清空历史</button>
+            </div>
+          </div>
+          <div id="diagnosis-summary" class="diagnosis-summary hidden">
+            <div class="diagnosis-stats">
+              <div class="diagnosis-stat-card">
+                <strong id="diag-total-attempts">0</strong>
+                <span>总分析次数</span>
+              </div>
+              <div class="diagnosis-stat-card">
+                <strong id="diag-correct-rate">0%</strong>
+                <span>选择正确率</span>
+              </div>
+              <div class="diagnosis-stat-card">
+                <strong id="diag-strong-categories">0</strong>
+                <span>掌握专题数</span>
+              </div>
+              <div class="diagnosis-stat-card">
+                <strong id="diag-weak-categories">0</strong>
+                <span>薄弱专题数</span>
+              </div>
+            </div>
+            <div class="diagnosis-categories" id="diagnosis-categories"></div>
+            <div class="diagnosis-history" id="diagnosis-history"></div>
+          </div>
+          <div id="diagnosis-empty" class="diagnosis-empty">
+            <p>暂无分析历史。在题目 AI 分析中选择模板后，系统会记录你的判断与AI推荐结果的对比，用于生成诊断报告。</p>
           </div>
         </section>
 
