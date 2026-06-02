@@ -801,16 +801,42 @@ async function analyzeProblemImage() {
   const templateCatalog = createTemplateCatalog();
   const extraPrompt = elements.aiExtraPrompt.value.trim();
 
+  // 构建历史反馈上下文
+  const history = analyzeMastery();
+  let historyContext = '';
+  if (history.totalAttempts > 0) {
+    const weakCategories = Object.entries(history.categoryStats)
+      .filter(([, s]) => s.total > 0 && s.correct / s.total < 0.5)
+      .map(([cat, s]) => `${cat}（${s.correct}/${s.total} 正确）`)
+      .join('、');
+
+    const recentMistakes = history.recentHistory
+      .filter(r => !r.isCorrect)
+      .slice(0, 3)
+      .map(r => `题目"${r.problemSummary}"选了"${r.userChoice}"但实际应选"${r.aiTopTitle}"`)
+      .join('；');
+
+    historyContext = [
+      '=== 用户历史学习数据 ===',
+      `累计分析 ${history.totalAttempts} 次，正确率 ${history.correctRate}%。`,
+      weakCategories ? `薄弱专题：${weakCategories}。` : '',
+      recentMistakes ? `近期错误记录：${recentMistakes}。` : '',
+      '请在分析时参考以上历史数据：如果用户在当前题目中可能重复之前的错误模式，请明确提醒；',
+      '如果用户这次的选择体现了进步或退步趋势，请指出。',
+    ].filter(Boolean).join('\n');
+  }
+
   // 构建包含用户选择分析的新 prompt
   const userChoicePrompt = userChoiceText
     ? `用户认为这道题应该使用模板："${userChoiceText}"。请在分析结果中加入对用户选择的评估：\n` +
       `1. user_choice_correct: 判断用户选择是否合理(true/false)\n` +
-      `2. user_choice_analysis: 分析用户选择正确或错误的原因\n` +
+      `2. user_choice_analysis: 分析用户选择正确或错误的原因，并结合用户历史学习数据给出个性化建议\n` +
       `3. 如果选择错误，指出用户可能混淆的概念`
     : '';
 
   const systemPrompt = [
     '你是算法模板推荐与诊断助手。',
+    historyContext,
     '你必须先读取题目图片，理解题意和关键特征。',
     '然后只能从给定的模板目录清单中选择 1 到 5 个候选模板。',
     '请优先输出最匹配的模板，并说明原因。',
