@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智能算法学习助手 · 项目展示</title>
+  <link rel="stylesheet" href="./styles.css?v=20260602-showcase" />
+  <style>
+    html { height: auto; }
+    body { overflow-x: hidden; overflow-y: auto; }
+
+    .showcase { max-width: 1060px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ── Hero ── */
+    .hero-block {
+      text-align: center;
+      padding: 72px 0 56px;
+      position: relative;
+    }
+    .hero-block::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line), transparent);
+    }
+    .hero-block .badge {
+      display: inline-block;
+      padding: 5px 16px;
+      border-radius: 24px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--accent-soft);
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .hero-block h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      margin: 0 0 16px;
+      color: var(--text);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .hero-block h1 span { color: var(--accent); }
+    .hero-block .hero-desc {
+      font-size: 1.08rem;
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 28px;
+      line-height: 1.8;
+    }
+    .hero-block .hero-cta {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .hero-block .hero-cta a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 11px 24px;
+      border-radius: 48px;
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+    .cta-primary { background: var(--accent); color: #fff; }
+    .cta-primary:hover { background: var(--accent-strong); }
+    .cta-ghost { background: var(--accent-soft); color: var(--accent); }
+    .cta-ghost:hover { background: rgba(180, 79, 47, 0.2); }
+
+    /* ── Section common ── */
+    .section { margin-top: 68px; }
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .section-label .label-icon {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    .section h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin: 0 0 12px;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .section .intro-text {
+      font-size: 0.98rem;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 700px;
+      margin-bottom: 28px;
+    }
+
+    /* ── Pain Cards ── */
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+    }
+    .pain-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px 20px;
+      transition: box-shadow 0.25s;
+    }
+    .pain-card:hover { box-shadow: var(--shadow); }
+    .pain-card .pain-emoji { font-size: 2rem; margin-bottom: 10px; }
+    .pain-card h4 { font-size: 0.96rem; font-weight: 700; margin: 0 0 6px; color: var(--text); }
+    .pain-card p { font-size: 0.86rem; color: var(--muted); margin: 0; line-height: 1.6; }
+
+    /* ── 4 Capability Cards ── */
+    .cap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+    .cap-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 28px 22px;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.25s;
+    }
+    .cap-card:hover { box-shadow: var(--shadow); }
+    .cap-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+    .cap-card.c1::before { background: linear-gradient(90deg, #3a6b82, #5a9fb8); }
+    .cap-card.c2::before { background: linear-gradient(90deg, #7a5a28, #b8963e); }
+    .cap-card.c3::before { background: linear-gradient(90deg, #2f6b4f, #4da87a); }
+    .cap-card.c4::before { background: linear-gradient(90deg, #7a3f64, #b85a8a); }
+    .cap-card .cap-icon { font-size: 2.2rem; margin-bottom: 14px; }
+    .cap-card h3 { font-size: 1.08rem; font-weight: 700; margin: 0 0 8px; color: var(--text); }
+    .cap-card p { font-size: 0.88rem; color: var(--muted); margin: 0 0 16px; line-height: 1.7; }
+    .cap-card .cap-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .cap-card .cap-tag {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      background: rgba(180, 79, 47, 0.07);
+      color: var(--accent);
+    }
+
+    /* ── Workflow ── */
+    .flow-row {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .flow-step {
+      flex: 1;
+      min-width: 160px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px 16px;
+      text-align: center;
+      position: relative;
+      z-index: 0;
+    }
+    .flow-step + .flow-step { margin-left: -8px; }
+    @media (max-width: 760px) {
+      .flow-row { gap: 12px; }
+      .flow-step + .flow-step { margin-left: 0; }
+    }
+    .flow-step .flow-num {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.92rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .flow-step h4 { font-size: 0.92rem; font-weight: 700; margin: 0 0 4px; color: var(--text); }
+    .flow-step p { font-size: 0.8rem; color: var(--muted); margin: 0; line-height: 1.55; }
+
+    /* ── AI Roles ── */
+    .ai-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .ai-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px 18px;
+      text-align: center;
+    }
+    .ai-card .ai-emoji { font-size: 2rem; margin-bottom: 8px; }
+    .ai-card h4 { font-size: 0.92rem; font-weight: 700; margin: 0 0 4px; color: var(--text); }
+    .ai-card .ai-scene { font-size: 0.78rem; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+    .ai-card p { font-size: 0.83rem; color: var(--muted); margin: 0; line-height: 1.6; }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 36px;
+    }
+    .stat-item {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px 28px;
+      text-align: center;
+      min-width: 120px;
+    }
+    .stat-item .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+    .stat-item .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── Twin compare ── */
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+    @media (max-width: 640px) { .compare-row { grid-template-columns: 1fr; } }
+    .compare-box {
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+    }
+    .compare-box.old {
+      background: rgba(130, 110, 90, 0.06);
+      border: 1px dashed var(--line);
+    }
+    .compare-box.new {
+      background: var(--accent-soft);
+      border: 1px solid rgba(180, 79, 47, 0.2);
+    }
+    .compare-box h4 { font-size: 1rem; font-weight: 700; margin: 0 0 8px; }
+    .compare-box.old h4 { color: var(--muted); }
+    .compare-box.new h4 { color: var(--accent); }
+    .compare-box ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      text-align: left;
+      display: inline-block;
+    }
+    .compare-box li {
+      padding: 5px 0;
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── Screenshot placeholder ── */
+    .screen-mock {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 24px;
+    }
+    .screen-mock .mock-toolbar {
+      background: var(--panel-strong);
+      padding: 10px 16px;
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+    .mock-toolbar .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mock-toolbar .dot.red { background: #d45; }
+    .mock-toolbar .dot.yellow { background: #da4; }
+    .mock-toolbar .dot.green { background: #4a8; }
+    .mock-toolbar .mock-title {
+      margin-left: 12px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .screen-mock .mock-body {
+      padding: 28px 24px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 20px;
+      min-height: 220px;
+    }
+    @media (max-width: 640px) { .mock-body { grid-template-columns: 1fr; } }
+    .mock-sidebar {
+      background: rgba(0,0,0,0.03);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mock-sidebar .mock-row {
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .mock-sidebar .mock-row.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .mock-main {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mock-main .mock-badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .mock-badge {
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .mock-main .mock-code {
+      background: rgba(0,0,0,0.04);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── Footer ── */
+    .showcase-footer {
+      text-align: center;
+      margin-top: 64px;
+      padding: 36px 0 24px;
+      border-top: 1px solid var(--line);
+    }
+    .showcase-footer p { color: var(--muted); font-size: 0.86rem; margin: 0; line-height: 1.7; }
+    .showcase-footer .footer-links { margin-top: 12px; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .showcase-footer .footer-links a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.88rem; }
+
+    @media (max-width: 640px) {
+      .hero-block h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="showcase">
+
+  <!-- ═══════ HERO ═══════ -->
+  <header class="hero-block">
+    <div class="badge">🧠 Personalized Algorithm Learning Assistant</div>
+    <h1>智能<span>算法</span>学习助手</h1>
+    <p class="hero-desc">
+      不直接替你做题，而是帮你<strong>快速匹配模板</strong>、<strong>深入理解算法原理</strong>、
+      <strong>持续维护个人知识库</strong>。<br />一个围绕你自己模板积累搭建的学习系统。
+    </p>
+    <div class="hero-cta">
+      <a class="cta-primary" href="./index.html">🚀 进入算法查询</a>
+      <a class="cta-ghost" href="./ai-analysis.html">📸 题目 AI 分析</a>
+      <a class="cta-ghost" href="./template-maintenance.html">📥 模板入库</a>
+    </div>
+  </header>
+
+  <!-- ═══════ 痛点 ═══════ -->
+  <section class="section">
+    <div class="section-label"><span class="label-icon">🎯</span> 问题背景</div>
+    <h2>算法学习者的真实困境</h2>
+    <p class="intro-text">
+      作为一个算法竞赛学习者，模板积累是长时间的过程。但当模板越来越多，真正做题时却常常卡在第一步——<strong>这道题到底该用哪个模板？</strong>
+    </p>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-emoji">📂</div>
+        <h4>模板散乱，查找低效</h4>
+        <p>几十个 cpp 文件分散在本地多个文件夹里，每次翻找都靠记忆和运气，没有统一的检索入口。</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-emoji">❓</div>
+        <h4>文件名看不出"怎么用"</h4>
+        <p>光看 <code>dijkstra.cpp</code> 无法知道它适合什么题、有哪些坑、和当前题目有什么关系。</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-emoji">🧩</div>
+        <h4>题 → 模板 匹配靠直觉</h4>
+        <p>面对新题，常常停留在"这题好像见过"的阶段，缺少按题意快速匹配模板的工具。</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-emoji">🔄</div>
+        <h4>积累越多，维护越难</h4>
+        <p>每学一个新算法就要手动分类、写注释、记笔记，久了就容易滞后甚至遗忘。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 对比 ═══════ -->
+  <section class="section">
+    <div class="section-label"><span class="label-icon">🔄</span> 方案对比</div>
+    <h2>从"代码仓库"到"学习系统"</h2>
+    <div class="compare-row">
+      <div class="compare-box old">
+        <h4>❌ 传统方式</h4>
+        <ul>
+          <li>• 手动翻文件夹找模板</li>
+          <li>• 文件名和代码分离，无标签</li>
+          <li>• 做题时凭感觉选算法</li>
+          <li>• 新模板要手工分类存放</li>
+          <li>• 复习全靠自己回忆</li>
+        </ul>
+      </div>
+      <div class="compare-box new">
+        <h4>✅ 本系统</h4>
+        <ul>
+          <li>• 分类树 + 关键词搜索，秒定位</li>
+          <li>• 每个模板带适用题型/识别信号/风险</li>
+          <li>• 上传题目图片，AI 推荐候选模板</li>
+          <li>• 粘贴代码 → AI 分类 → 一键入库</li>
+          <li>• 收藏 + 最近查看，复习有迹可循</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 四大能力 ═══════ -->
+  <section class="section">
+    <div class="section-label"><span class="label-icon">⚡</span> 核心能力</div>
+    <h2>四大功能，覆盖完整学习链路</h2>
+    <div class="cap-grid">
+      <div class="cap-card c1">
+        <div class="cap-icon">🔍</div>
+        <h3>模板查询浏览</h3>
+        <p>分层分类树、名称搜索、专题快筛、源码高亮。每个模板附带适用题型、识别信号与常见风险标签。</p>
+        <div class="cap-tags">
+          <span class="cap-tag">分层分类</span><span class="cap-tag">关键词过滤</span><span class="cap-tag">源码高亮</span><span class="cap-tag">收藏</span>
+        </div>
+      </div>
+      <div class="cap-card c2">
+        <div class="cap-icon">💡</div>
+        <h3>AI 模板讲解</h3>
+        <p>选中模板后按需触发，AI 读取标题/分类/源码，自动识别算法并从核心思路、适用场景、误区等维度讲解。</p>
+        <div class="cap-tags">
+          <span class="cap-tag">按需触发</span><span class="cap-tag">自动识别</span><span class="cap-tag">多维讲解</span>
+        </div>
+      </div>
+      <div class="cap-card c3">
+        <div class="cap-icon">📸</div>
+        <h3>题目图片分析</h3>
+        <p>上传题目截图或粘贴，多模态模型先理解题意、提取信号，再从本地模板库推荐最匹配的候选模板。</p>
+        <div class="cap-tags">
+          <span class="cap-tag">图片上传</span><span class="cap-tag">题意提取</span><span class="cap-tag">模板推荐</span><span class="cap-tag">联动详情</span>
+        </div>
+      </div>
+      <div class="cap-card c4">
+        <div class="cap-icon">📥</div>
+        <h3>网页内模板维护</h3>
+        <p>粘贴代码 → AI 智能分类 → 自动建议文件名/目录 → 一键写入本地模板库。支持查询页直接删除纠错。</p>
+        <div class="cap-tags">
+          <span class="cap-tag">智能分类</span><span class="cap-tag">建议目录</span><span class="cap-tag">一键入库</span><span class="cap-tag">删除纠错</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 使用流程 ═══════ -->
+  <section class="section">
+    <div class="section-label"><span class="label-icon">🗺️</span> 使用流程</div>
+    <h2>三张页面 · 一条全链路</h2>
+    <div class="flow-row">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <h4>📸 不确定方向</h4>
+        <p>题目 AI 分析页：上传图片 → 获取候选模板</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <h4>🔍 浏览定位</h4>
+        <p>算法查询页：分类树 + 搜索 → 找到目标模板</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <h4>💡 深入理解</h4>
+        <p>查看标签 + 按需触发 AI 讲解</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <h4>📥 持续维护</h4>
+        <p>模板入库页：新增模板；查询页：纠正误添加</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 界面示意 ═══════ -->
+  <section class="section">
+    <div class="section-label"><span class="label-icon">🖥️</span> 界面概览</div>
+    <h2>模板详情页一瞥</h2>
+    <p class="intro-text">每个模板不止是一段代码——它带有<strong>分类路径、学习难度、适用题型、识别信号、常见风险</strong>等标签，形成可阅读、可理解的学习条目。</p>
+    <div class="screen-mock">
+      <div class="mock-toolbar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="mock-title">算法查询页 — dijkstra+链式前向星</span>
+      </div>
+      <div class="mock-body">
+        <div class="mock-sidebar">
+          <div class="mock-row"><strong>📁 图论</strong></div>
+          <div class="mock-row" style="padding-left:20px;">最短路</div>
+          <div class="mock-row active" style="padding-left:20px;">dijkstra+链式前向星</div>
+          <div class="mock-row" style="padding-left:20px;">floyd+邻接矩阵</div>
+          <div class="mock-row">最小生成树</div>
+          <div class="mock-row">拓扑排序</div>
+        </div>
+        <div class="mock-main">
+          <div style="font-weight:700;color:var(--text);">dijkstra+链式前向星</div>
+          <div class="mock-badge-row">
+            <span class="mock-badge">📌 图论 → 最短路</span>
+            <span class="mock-badge">📊 进阶</span>
+            <span class="mock-badge">🏷 最短路 · 堆优化 · 非负边权</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--muted);">
+            <strong>适用题型：</strong>非负权单源最短路、稀疏图路径计算<br/>
+            <strong>识别信号：</strong>题目出现最短路、带权图距离关系<br/>
+            <strong>⚠️ 常见风险：</strong>含负权边时不能直接使用、堆中旧状态若不丢弃会影响效率
+          </div>
+          <div class="mock-code">
+            <span style="color:var(--accent);">struct</span> Edge { <span style="color:var(--accent);">int</span> to, w; };<br/>
+            vector<Edge> G[MAXN];<br/>
+            <span style="color:var(--accent);">int</span> dis[MAXN];<br/>
+            priority_queue<...> pq;<br/>
+            <span style="opacity:0.4;">// ... 28 行源码，支持折叠与语法高亮 ...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ AI 角色 ═══════ -->
+  <section class="section">
+    <div class="section-label"><span class="label-icon">🤖</span> AI 参与方式</div>
+    <h2>AI 在三个节点辅助，不替代学习过程</h2>
+    <div class="ai-grid">
+      <div class="ai-card">
+        <div class="ai-emoji">📸</div>
+        <h4>题目理解</h4>
+        <div class="ai-scene">题目 AI 分析页</div>
+        <p>多模态模型读取图片，提取信号，从模板库推荐候选。</p>
+      </div>
+      <div class="ai-card">
+        <div class="ai-emoji">💡</div>
+        <h4>模板讲解</h4>
+        <div class="ai-scene">算法查询页内</div>
+        <p>结合源码与标签，自动识别算法并生成多维讲解。</p>
+      </div>
+      <div class="ai-card">
+        <div class="ai-emoji">📥</div>
+        <h4>分类与维护</h4>
+        <div class="ai-scene">入库页 + CLI 脚本</div>
+        <p>判断新模板属于哪个专题，建议文件名和目录，补全元数据。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 数据 ═══════ -->
+  <section class="section">
+    <div class="section-label"><span class="label-icon">📊</span> 模板库规模</div>
+    <h2>已覆盖的算法专题</h2>
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-num">6+</div>
+        <div class="stat-label">顶层专题</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">50+</div>
+        <div class="stat-label">算法模板</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4</div>
+        <div class="stat-label">AI 能力节点</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">1 键</div>
+        <div class="stat-label">本地启动</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;justify-content:center;">
+      <span class="mock-badge">图论：最短路 / MST / 拓扑 / LCA</span>
+      <span class="mock-badge">数据结构：树状数组 / 线段树 / 并查集</span>
+      <span class="mock-badge">动态规划：背包 / LIS / 数位 / 状压 / 树形</span>
+      <span class="mock-badge">基础算法：二分 / DFS / BFS</span>
+      <span class="mock-badge">数学：高精度 / 三分 / 快速幂 / NTT</span>
+      <span class="mock-badge">字符串：BWT / string 整理</span>
+    </div>
+  </section>
+
+  <!-- ═══════ Footer ═══════ -->
+  <footer class="showcase-footer">
+    <p>🧠 本地一键启动 · 无需外部依赖 · 数据完全由自己掌控 · AI 仅在主动触发时调用</p>
+    <div class="footer-links">
+      <a href="./index.html">算法查询</a>
+      <a href="./ai-analysis.html">题目 AI 分析</a>
+      <a href="./template-maintenance.html">模板入库</a>
+      <a href="./project-intro.html">演示辅助</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

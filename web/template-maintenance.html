@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>模板入库</title>
+    <link rel="stylesheet" href="./styles.css?v=20260528-manage-page" />
+  </head>
+  <body data-page="template-maintenance">
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <p class="eyebrow">Stage 2</p>
+          <h1>模板库查询系统</h1>
+          <p class="subtitle">专注代码分类、模板入库与落库后的结果回看。</p>
+          <div class="page-switch" aria-label="页面切换">
+            <a class="page-switch-link" href="./index.html">算法查询</a>
+            <a class="page-switch-link" href="./ai-analysis.html">题目 AI 分析</a>
+            <a class="page-switch-link is-active" href="./template-maintenance.html">模板入库</a>
+          </div>
+        </div>
+
+        <section class="panel search-panel">
+          <div class="panel-title-row compact">
+            <label for="keyword">名称过滤</label>
+            <button id="clear-search" type="button">清空</button>
+          </div>
+          <input id="keyword" type="search" placeholder="输入模板名、目录名或标签" />
+          <p id="result-count" class="helper"></p>
+        </section>
+
+        <section class="panel summary-panel">
+          <div class="panel-title-row">
+            <h2>分类总览</h2>
+            <button id="reset-view" type="button">重置视图</button>
+          </div>
+          <div id="summary-cards" class="summary-cards"></div>
+        </section>
+
+        <section class="panel tree-panel">
+          <div class="panel-title-row">
+            <h2>目录树</h2>
+            <button id="expand-all" type="button">全部展开</button>
+          </div>
+          <div id="tree-root" class="tree-root"></div>
+        </section>
+      </aside>
+
+      <main class="content">
+        <section class="hero">
+          <div>
+            <p class="eyebrow">Template Intake</p>
+            <h2>贴代码做 AI 分类，再把新模板直接同步进本地模板库</h2>
+            <p>
+              这一页只负责模板维护：你可以粘贴一段 C++ 模板代码，先让模型判断它最接近哪个专题，再直接保存到本地模板库，并同步刷新网页里的查询结果。
+            </p>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <span>模板总数</span>
+              <strong id="hero-total">0</strong>
+            </div>
+            <div>
+              <span>顶层专题</span>
+              <strong id="hero-categories">0</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="recommend-panel code-classify-panel">
+          <div class="recommend-header">
+            <div>
+              <p class="eyebrow">AI Classify</p>
+              <h3>贴代码或上传 cpp，让 AI 判断模板类别</h3>
+            </div>
+            <span id="classify-status" class="recommend-status">等待输入代码</span>
+          </div>
+
+          <div class="recommend-grid">
+            <div class="recommend-card">
+              <div class="ai-config-grid single">
+                <div>
+                  <label for="classify-api-key">临时 API Key</label>
+                  <input id="classify-api-key" type="password" placeholder="仅保存在当前标签页，默认复用 AI 分析页的接口配置" />
+                </div>
+              </div>
+
+              <div>
+                <label for="classify-code-input">模板代码</label>
+                <textarea
+                  id="classify-code-input"
+                  rows="10"
+                  placeholder="直接粘贴一段 C++ 模板代码，或通过下方上传 cpp 文件。"
+                ></textarea>
+              </div>
+
+              <div>
+                <label for="classify-code-file">上传 cpp 文件</label>
+                <input id="classify-code-file" class="file-input" type="file" accept=".cpp,.cc,.cxx,.txt,text/plain" />
+              </div>
+
+              <p class="helper">
+                系统会结合本地模板目录与已有标签，让模型判断这段代码最接近哪个模板专题，并联动下方结果区与模板详情。粘贴代码或上传 cpp 文件后，仍需你手动点击“智能分类”再发起识别。
+              </p>
+
+              <div class="recommend-actions">
+                <button id="run-code-classify" type="button">智能分类</button>
+                <button id="clear-code-classify" type="button">清空输入</button>
+              </div>
+
+              <div class="save-template-box">
+                <div class="ai-config-grid save-template-grid">
+                  <div>
+                    <label for="save-template-name">保存文件名</label>
+                    <input id="save-template-name" type="text" placeholder="例如：新的最短路模板.cpp" />
+                  </div>
+                  <div>
+                    <label for="save-template-path">建议存放目录</label>
+                    <input id="save-template-path" type="text" list="save-template-path-options" placeholder="例如：模板库/图论/网络流" />
+                    <datalist id="save-template-path-options"></datalist>
+                    <p class="helper">可直接输入新目录；若目录不存在，保存时会在 模板库 内自动创建。</p>
+                  </div>
+                </div>
+
+                <label class="save-template-option">
+                  <input id="save-template-ai-metadata" type="checkbox" checked />
+                  <span>保存后自动补一份 AI 元数据</span>
+                </label>
+
+                <div class="recommend-actions">
+                  <button id="save-current-template" type="button">加入模板库</button>
+                </div>
+
+                <p id="save-template-hint" class="helper">
+                  点击“加入模板库”后会自动写入本地模板文件，并同步刷新网页里的模板数据。
+                </p>
+              </div>
+            </div>
+
+            <div class="recommend-card result-card">
+              <div class="panel-title-row">
+                <h3>分类结果</h3>
+                <span id="classify-count" class="helper">等待代码</span>
+              </div>
+              <div id="classify-summary" class="analysis-summary hidden">
+                <article class="analysis-card">
+                  <h4>识别分类</h4>
+                  <p id="classify-category-text"></p>
+                </article>
+                <article class="analysis-card">
+                  <h4>识别信号</h4>
+                  <div id="classify-signals" class="tag-list"></div>
+                </article>
+                <article class="analysis-card">
+                  <h4>分类备注</h4>
+                  <p id="classify-caution-text"></p>
+                </article>
+              </div>
+              <div id="classify-results" class="recommend-results">
+                <div class="recommend-empty">
+                  <h4>先提供模板代码</h4>
+                  <p>你可以直接粘贴代码，或上传一个 cpp 文件。系统会自动定位最接近的模板类别，并联动下方模板详情。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="empty-state" class="empty-state">
+          <h3>先完成一次分类，或从左侧挑一个模板</h3>
+          <p>这页适合做模板入库前的定位与核对，你也可以直接通过左侧目录树浏览已有模板。</p>
+        </section>
+
+        <section id="detail-panel" class="detail-panel hidden">
+          <div class="detail-header">
+            <div>
+              <p id="detail-breadcrumb" class="eyebrow"></p>
+              <h3 id="detail-title"></h3>
+            </div>
+            <span id="detail-tag" class="detail-tag"></span>
+          </div>
+
+          <div class="meta-strip">
+            <div class="meta-pill">
+              <span>学习难度</span>
+              <strong id="detail-difficulty"></strong>
+            </div>
+            <div class="meta-pill wide">
+              <span>关键词</span>
+              <div id="detail-keywords" class="tag-list"></div>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <article class="detail-card">
+              <h4>人工分类路径</h4>
+              <p id="detail-layers"></p>
+            </article>
+            <article class="detail-card">
+              <h4>原始文件位置</h4>
+              <p id="detail-path"></p>
+            </article>
+            <article class="detail-card wide">
+              <h4>分类说明</h4>
+              <p id="detail-note"></p>
+            </article>
+            <article class="detail-card wide">
+              <h4>适用题型</h4>
+              <div id="detail-scenarios" class="tag-list"></div>
+            </article>
+            <article class="detail-card wide">
+              <h4>识别信号</h4>
+              <div id="detail-signals" class="tag-list"></div>
+            </article>
+            <article class="detail-card wide">
+              <h4>常见风险</h4>
+              <div id="detail-risks" class="tag-list"></div>
+            </article>
+          </div>
+
+          <div class="code-toolbar">
+            <div class="code-toolbar-title">
+              <span>模板源码</span>
+              <span id="code-status" class="code-status">编辑器视图</span>
+            </div>
+            <div class="code-actions">
+              <button id="toggle-wrap" type="button">自动换行</button>
+              <button id="toggle-collapse" type="button">展开全部</button>
+              <span id="code-meta" class="code-meta"></span>
+              <button id="copy-code" type="button">复制代码</button>
+            </div>
+          </div>
+          <pre id="code-block" class="code-block is-collapsed"><code id="detail-code"></code></pre>
+        </section>
+      </main>
+    </div>
+
+    <script src="./data/template-data.js?v=20260528-manage-page"></script>
+    <script src="./app.js?v=20260602-ai-proxy"></script>
+  </body>
+</html>

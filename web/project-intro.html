@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>演示辅助 - 智能算法学习助手</title>
+    <link rel="stylesheet" href="./styles.css?v=20260602-assist" />
+    <style>
+      html { height: auto; }
+      body { overflow-x: hidden; overflow-y: auto; }
+
+      .assist-shell {
+        max-width: 1020px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+
+      /* Hero */
+      .assist-hero {
+        text-align: center;
+        padding: 40px 0 36px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 40px;
+      }
+
+      .assist-hero .eyebrow {
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 600;
+        margin: 0 0 8px;
+      }
+
+      .assist-hero h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 10px;
+        color: var(--text);
+        line-height: 1.35;
+      }
+
+      .assist-hero .subtitle {
+        font-size: 0.95rem;
+        color: var(--muted);
+        max-width: 540px;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      .assist-hero .quick-nav {
+        margin-top: 22px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .quick-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 18px;
+        border-radius: 48px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: var(--accent-soft);
+        color: var(--accent);
+        transition: all 0.2s ease;
+      }
+
+      .quick-nav a:hover { background: rgba(180, 79, 47, 0.2); }
+      .quick-nav a.primary { background: var(--accent); color: #fff; }
+      .quick-nav a.primary:hover { background: var(--accent-strong); }
+
+      /* Section */
+      .step-section {
+        margin-bottom: 48px;
+      }
+
+      .step-section .step-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .step-section .step-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        padding: 0 10px;
+      }
+
+      .step-section .step-header h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--text);
+      }
+
+      .step-section .step-header .step-time {
+        font-size: 0.82rem;
+        color: var(--muted);
+        font-weight: 500;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+
+      /* Two-column grid: left = 讲稿, right = 演示操作 */
+      .step-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      @media (max-width: 700px) {
+        .step-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .step-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 22px;
+      }
+
+      .step-card .card-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 24px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+
+      .card-label.speech { background: rgba(72, 116, 138, 0.14); color: #3a6b82; }
+      .card-label.action { background: rgba(135, 100, 40, 0.14); color: #7a5a28; }
+
+      .step-card .speech-block {
+        background: var(--panel-strong);
+        border-left: 3px solid var(--accent);
+        border-radius: 0 10px 10px 0;
+        padding: 14px 18px;
+        margin-bottom: 14px;
+        font-size: 0.92rem;
+        color: var(--text);
+        line-height: 1.8;
+      }
+
+      .step-card .speech-block strong {
+        color: var(--accent);
+      }
+
+      .step-card .action-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .step-card .action-list li {
+        position: relative;
+        padding: 7px 0 7px 24px;
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.6;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .step-card .action-list li:last-child {
+        border-bottom: none;
+      }
+
+      .step-card .action-list li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        top: 7px;
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 0.82rem;
+      }
+
+      .step-card .key-point {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: rgba(180, 79, 47, 0.08);
+        color: var(--accent);
+        margin-top: 10px;
+        margin-right: 6px;
+      }
+
+      /* Summary section */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .summary-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        text-align: center;
+      }
+
+      .summary-card .summary-icon {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+      }
+
+      .summary-card h4 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin: 0 0 4px;
+        color: var(--text);
+      }
+
+      .summary-card p {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      /* QA section */
+      .qa-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-bottom: 12px;
+      }
+
+      .qa-card .qa-q {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 6px;
+      }
+
+      .qa-card .qa-a {
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* Checklist */
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 8px;
+      }
+
+      .checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 0.86rem;
+        color: var(--muted);
+        padding: 6px 0;
+      }
+
+      .checklist li .checkbox {
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--line);
+        border-radius: 5px;
+        flex-shrink: 0;
+        margin-top: 1px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: transparent;
+      }
+
+      .checklist li.done .checkbox {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      .checklist li.done {
+        text-decoration: line-through;
+        opacity: 0.55;
+      }
+
+      /* Footer */
+      .assist-footer {
+        text-align: center;
+        padding: 32px 0 20px;
+        border-top: 1px solid var(--line);
+        margin-top: 40px;
+      }
+
+      .assist-footer p {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin: 0;
+        line-height: 1.7;
+      }
+
+      .assist-footer .footer-links {
+        margin-top: 10px;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .assist-footer .footer-links a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="assist-shell">
+
+      <!-- ============ HERO ============ -->
+      <header class="assist-hero">
+        <p class="eyebrow">Presentation Assistant</p>
+        <h1>演示辅助页</h1>
+        <p class="subtitle">
+          按顺序滚动此页面，每一步都告诉你<strong>讲什么</strong>和<strong>操作什么</strong>。
+          下方也有跳转入口，方便演示时切换页面。
+        </p>
+        <div class="quick-nav">
+          <a class="primary" href="./index.html" target="_blank">打开算法查询页</a>
+          <a href="./ai-analysis.html" target="_blank">打开题目 AI 分析页</a>
+          <a href="./template-maintenance.html" target="_blank">打开模板入库页</a>
+        </div>
+      </header>
+
+      <!-- ============ 总览时间线 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">⏱</span>
+          <h2>演示时间线总览</h2>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="summary-icon">1</div>
+            <h4>开场</h4>
+            <p>问题与定位（55秒）</p>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon">2</div>
+            <h4>查询页</h4>
+            <p>模板浏览（1分10秒）</p>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon">3</div>
+            <h4>AI 讲解</h4>
+            <p>理解模板（50秒）</p>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon">4</div>
+            <h4>题目分析</h4>
+            <p>题图→模板（55秒）</p>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon">5</div>
+            <h4>入库</h4>
+            <p>维护闭环（40秒）</p>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon">6</div>
+            <h4>总结</h4>
+            <p>收尾（30秒）</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 第一步：开场 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">1</span>
+          <h2>开场 —— 说清楚为什么做</h2>
+          <span class="step-time">⏱ 55秒</span>
+        </div>
+        <div class="step-grid">
+          <!-- 讲稿 -->
+          <div class="step-card">
+            <span class="card-label speech">🗣 讲什么</span>
+            <div class="speech-block">
+              大家好，我这个项目叫<strong>"个性化算法学习助手"</strong>。<br><br>
+              先说一下我的背景。作为一个<strong>算法竞赛学习者</strong>，我很清楚一件事：算法能力的提升是一个长时间积累的过程，在这个过程中，<strong>拥有自己的模板库是必须的</strong>。模板库不只是存放代码，它需要支持日常查询、考前复习，以及随着学习深入不断更新维护。<br><br>
+              但在实际做题时，我遇到了一个具体的障碍：模板明明已经积累了不少，可真面对一道题目的时候，往往很难快速判断它属于哪一类算法，也就没法第一时间把对应的模板调出来。模板分散在本地文件夹里，翻找效率很低。而且光看文件名，根本不知道这个模板适合什么题、有什么常见坑。<br><br>
+              所以我真正需要的，是一个<strong>按照题意快速匹配模板、并且能讲解这个模板为什么适用</strong>的功能。这正是我这个项目的出发点——不是让AI直接替我做题，而是把我自己的模板库整理成一个<strong>可查询、可解释、可维护</strong>的学习系统。
+            </div>
+          </div>
+          <!-- 操作 -->
+          <div class="step-card">
+            <span class="card-label action">🎬 做什么</span>
+            <ul class="action-list">
+              <li>展示 <strong>project-intro.html</strong> 或直接口头开场</li>
+              <li>强调身份：算法竞赛学习者</li>
+              <li>点出三个关键词：<strong>查询、解释、维护</strong></li>
+              <li>说明四个核心能力：模板查询浏览、AI讲解、题图分析、模板维护</li>
+            </ul>
+            <span class="key-point">🔑 核心：这是围绕个人模板库的学习系统</span>
+            <span class="key-point">🔑 AI是辅助，不是替代做题</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 第二步：算法查询页 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">2</span>
+          <h2>算法查询页 —— 模板库的可视化入口</h2>
+          <span class="step-time">⏱ 1分10秒</span>
+        </div>
+        <div class="step-grid">
+          <div class="step-card">
+            <span class="card-label speech">🗣 讲什么</span>
+            <div class="speech-block">
+              先看<strong>算法查询页</strong>，这是整个系统的主入口。<br><br>
+              左边是我的模板目录树。注意这里的分类不是简单按文件夹来的——我建立了一层<strong>展示层分类</strong>。比如"图论"下面细分了最短路、最小生成树、拓扑排序、树上算法和存图与遍历，这是按照学习理解方式重新组织的。<br><br>
+              我点开dijkstra这个模板。右侧可以看到几个关键信息：<strong>人工分类路径</strong>是"图论→最短路"，<strong>学习难度</strong>是进阶，<strong>适用题型</strong>是非负权单源最短路和稀疏图路径计算，<strong>识别信号</strong>是"题目出现最短路"和"带权图距离关系"，<strong>常见风险</strong>提醒我负权边不能用。<br><br>
+              这些标签让模板从"一段代码"变成了<strong>"一个带解释的学习条目"</strong>。源码做了C++语法高亮，超过32行会自动折叠，可以一键复制。还有专题快筛、名称过滤、最近查看和收藏功能。
+            </div>
+          </div>
+          <div class="step-card">
+            <span class="card-label action">🎬 做什么</span>
+            <ul class="action-list">
+              <li>打开 <strong>算法查询页</strong>（index.html）</li>
+              <li>展示左侧 <strong>分类总览</strong> 卡片</li>
+              <li>展开"图论"，展示 <strong>二级目录</strong></li>
+              <li>点击 <strong>"dijkstra+链式前向星"</strong></li>
+              <li>右侧逐一指出：<strong>分类路径、难度、适用题型、识别信号、常见风险</strong></li>
+              <li>展示源码高亮和代码复制按钮</li>
+              <li>演示 <strong>专题快筛</strong>（如点击"动态规划"）</li>
+              <li>演示 <strong>名称过滤</strong>（如输入"背包"）</li>
+            </ul>
+            <span class="key-point">📌 重点展示：标签让模板变成学习条目</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 第三步：AI讲解 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">3</span>
+          <h2>AI 讲解 —— 从"找到模板"到"理解模板"</h2>
+          <span class="step-time">⏱ 50秒</span>
+        </div>
+        <div class="step-grid">
+          <div class="step-card">
+            <span class="card-label speech">🗣 讲什么</span>
+            <div class="speech-block">
+              接下来看AI是怎么参与进来的。<br><br>
+              在算法查询页里，有一个<strong>"当前模板AI讲解"</strong>的功能。它不是默认自动调的，而是我需要的时候才<strong>点击触发</strong>。AI会读取当前模板的标题、分类、标签和完整源码，自动识别出这是Dijkstra算法，然后从<strong>核心思路、适用场景、识别信号、常见误区、阅读建议</strong>几个维度来讲解。<br><br>
+              AI在这里的角色是<strong>"辅助解释模板"</strong>，不是替代模板库。它解决的是"我已经找到了模板，但还想进一步理解它为什么这样写"的问题。这个功能是按需触发，API Key只存在当前标签页的session里，<strong>不会写入项目文件</strong>。
+            </div>
+          </div>
+          <div class="step-card">
+            <span class="card-label action">🎬 做什么</span>
+            <ul class="action-list">
+              <li>保持dijkstra模板选中</li>
+              <li>点击 <strong>"需要AI讲解"</strong> 展开面板</li>
+              <li>强调：<strong>按需触发，不是自动调用</strong></li>
+              <li>点击 <strong>"生成当前模板讲解"</strong></li>
+              <li>展示返回结果：算法识别、核心思路、适用场景、识别信号、误区、阅读建议</li>
+            </ul>
+            <span class="key-point">📌 重点：AI辅助理解，不替代模板库</span>
+            <span class="key-point">📌 API Key仅存session，不落盘</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 第四步：题目AI分析 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">4</span>
+          <h2>题目 AI 分析 —— 从"题目图片"到"候选模板"</h2>
+          <span class="step-time">⏱ 55秒</span>
+        </div>
+        <div class="step-grid">
+          <div class="step-card">
+            <span class="card-label speech">🗣 讲什么</span>
+            <div class="speech-block">
+              接下来是<strong>题目AI分析页</strong>，它解决的是更前置的问题——"我面对一道题，连应该看哪个模板都不知道"。<br><br>
+              这一页支持<strong>上传题目图片</strong>或者<strong>直接粘贴截图</strong>。系统会把图片交给外部的多模态模型，先理解题意并提取关键信号，再从我的<strong>本地模板库</strong>中给出候选模板，而不是直接生成题解。<br><br>
+              分析结果里会包含<strong>题意概括、识别信号、候选模板和推荐理由</strong>。我点一个候选模板，右侧就会联动展示这个模板的详细信息。这样整条链路就通了：从题目图片到模板定位，再到查看标签和源码。<br><br>
+              接口地址和模型都可以自定义，API Key只在浏览器当前会话使用，<strong>不落盘</strong>。
+            </div>
+          </div>
+          <div class="step-card">
+            <span class="card-label action">🎬 做什么</span>
+            <ul class="action-list">
+              <li>切换到 <strong>题目AI分析页</strong></li>
+              <li>演示 <strong>粘贴截图</strong> 或上传图片</li>
+              <li>点击 <strong>"调用模型分析"</strong></li>
+              <li>展示返回结果：<strong>题意概括、识别信号、候选模板、推荐理由</strong></li>
+              <li>点击候选模板，展示 <strong>联动详情</strong></li>
+              <li>说明：接口和模型可自定义</li>
+            </ul>
+            <span class="key-point">📌 重点：题图→模板推荐，非直接解题</span>
+            <span class="key-point">📌 候选模板来自本地模板库</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 第五步：模板入库与删除 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">5</span>
+          <h2>模板入库与删除 —— 网页内的维护闭环</h2>
+          <span class="step-time">⏱ 40秒</span>
+        </div>
+        <div class="step-grid">
+          <div class="step-card">
+            <span class="card-label speech">🗣 讲什么</span>
+            <div class="speech-block">
+              最后看一下<strong>模板维护能力</strong>。<br><br>
+              在模板入库页，我可以粘贴一段C++代码，或者上传一个cpp文件，然后点击"智能分类"。系统会调用AI判断这段代码最接近模板库里哪个专题，自动给出<strong>候选匹配、建议文件名和建议存放目录</strong>。<br><br>
+              确认没问题后点"加入模板库"，这段代码就会<strong>直接写入本地模板库文件夹</strong>，查询列表也会同步刷新。如果不小心加错了，回到查询页选中它，点"删除当前模板"就能删掉，同时清理对应的AI元数据。<br><br>
+              这样，<strong>模板新增、分类、入库、查询到删除纠错</strong>就形成了一个完整的维护闭环。
+            </div>
+          </div>
+          <div class="step-card">
+            <span class="card-label action">🎬 做什么</span>
+            <ul class="action-list">
+              <li>切换到 <strong>模板入库页</strong></li>
+              <li>粘贴一段C++模板代码</li>
+              <li>点击 <strong>"智能分类"</strong>，展示分类结果</li>
+              <li>查看 <strong>建议文件名和存放目录</strong></li>
+              <li>点击 <strong>"加入模板库"</strong></li>
+              <li>切回查询页，找到刚入库的模板</li>
+              <li>点击 <strong>"删除当前模板"</strong> 演示纠错</li>
+            </ul>
+            <span class="key-point">📌 重点：网页内直接写文件，完整维护闭环</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 第六步：总结收尾 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">6</span>
+          <h2>总结收尾</h2>
+          <span class="step-time">⏱ 30秒</span>
+        </div>
+        <div class="step-grid">
+          <div class="step-card">
+            <span class="card-label speech">🗣 讲什么</span>
+            <div class="speech-block">
+              总结一下这个项目的核心思路。<br><br>
+              我没有把AI用成一个"直接解题器"，而是让它分别在<strong>三个关键节点</strong>上起作用：<strong>题目理解时帮助定位候选模板、找到模板后帮助讲解原理、新模板入库时帮助分类和补标签</strong>。<br><br>
+              模板库本身始终是系统的主体，AI是辅助，这让整个系统更稳定可控，也更符合"个性化学习助手"的定位——它是围绕我自己的模板积累和学习方式搭建的，不是通用问答工具。<br><br>
+              目前整个项目可以直接通过<strong>一键脚本启动</strong>，本地就能完整演示。以上就是我的项目，谢谢大家。
+            </div>
+          </div>
+          <div class="step-card">
+            <span class="card-label action">🎬 做什么</span>
+            <ul class="action-list">
+              <li>回到任意页面，做最终总结</li>
+              <li>强调 <strong>AI的三个角色</strong></li>
+              <li>强调 <strong>模板库是主体，AI是辅助</strong></li>
+              <li>说明 <strong>一键启动</strong> 即可演示</li>
+              <li>致谢，等待提问</li>
+            </ul>
+            <span class="key-point">🔑 AI在三个节点起作用：理解题目、讲解模板、维护分类</span>
+            <span class="key-point">🔑 一键脚本启动，本地完整演示</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ AI角色总结卡 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">🤖</span>
+          <h2>AI 在项目中的三个角色</h2>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="summary-icon">📸</div>
+            <h4>题目理解</h4>
+            <p>题目AI分析页：多模态模型读取图片，从模板库推荐候选</p>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon">💡</div>
+            <h4>模板讲解</h4>
+            <p>算法查询页内：结合标题/分类/源码自动识别算法并多维讲解</p>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon">📥</div>
+            <h4>模板分类与维护</h4>
+            <p>入库时分类建议 + 元数据补全，AI只辅助不接管</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 常见追问 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">💬</span>
+          <h2>可能被问到的问题</h2>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q">Q: 这个项目和普通模板仓库有什么区别？</div>
+          <div class="qa-a">
+            普通模板仓库只是代码的集合。这个项目把模板转成了可查询、可解释的学习条目——每个模板都带了适用题型、识别信号、常见风险这些标签，还加上了AI讲解和题图分析推荐。它不是"存代码"，而是"帮你理解代码和题型的关系"。现在还支持网页内直接新增和删除模板，维护层也搭起来了。
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q">Q: 为什么不直接用AI做题？</div>
+          <div class="qa-a">
+            如果直接让AI做题，项目就变成了普通问答工具，和我的个人知识库结合不紧。现在这个方案中，AI的职责很清楚：辅助理解、辅助推荐、辅助维护，但不替代学习过程。模板库始终是主体。AI还承担了维护角色，比如给新模板做分类判断、补关键词和说明，但它不会替代我自己的模板库。
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q">Q: 当前项目最核心的亮点是什么？</div>
+          <div class="qa-a">
+            把本地模板库、AI讲解、题图分析推荐、网页内模板维护四条链路串在一起，形成了一个从"找模板→理解模板→题目对应模板→维护模板"的完整学习流程。而且整个过程都在本地完成，数据完全由自己掌控。
+          </div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-q">Q: 当前项目还有哪些不足？</div>
+          <div class="qa-a">
+            目前已经完成原型，但还缺少更多真实算法题案例验证，也还没有把错因反馈、迁移练习和更系统的AI维护策略做完整。后续会继续完善学习闭环。
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 演示前检查清单 ============ -->
+      <section class="step-section">
+        <div class="step-header">
+          <span class="step-badge">✅</span>
+          <h2>演示前检查清单</h2>
+        </div>
+        <ul class="checklist">
+          <li class="done">
+            <span class="checkbox">✓</span>
+            运行 <code style="background:var(--accent-soft);padding:1px 6px;border-radius:4px;">./启动网页.command</code> 确保数据和页面最新
+          </li>
+          <li class="done">
+            <span class="checkbox">✓</span>
+            在 <code style="background:var(--accent-soft);padding:1px 6px;border-radius:4px;">API key.txt</code> 中确认 API Key 可用
+          </li>
+          <li class="done">
+            <span class="checkbox">✓</span>
+            准备一张算法题截图（推荐最短路/背包类）用于题目AI分析
+          </li>
+          <li class="done">
+            <span class="checkbox">✓</span>
+            准备一段短的 C++ 模板代码用于入库演示
+          </li>
+          <li class="done">
+            <span class="checkbox">✓</span>
+            三个页面都能正常打开和切换
+          </li>
+          <li class="done">
+            <span class="checkbox">✓</span>
+            浏览器提前加载好首页，避免现场等待
+          </li>
+        </ul>
+        <p style="margin-top:10px;font-size:0.82rem;color:var(--muted);">
+          提示：点击上方清单项可切换完成状态；默认全部标记为已完成，演示前请逐项确认。
+        </p>
+      </section>
+
+      <!-- Footer -->
+      <footer class="assist-footer">
+        <p>
+          演示过程中如需跳转，可使用顶部入口。<br />
+          本页面为演示辅助工具，不参与项目核心功能。
+        </p>
+        <div class="footer-links">
+          <a href="./index.html">算法查询</a>
+          <a href="./ai-analysis.html">题目 AI 分析</a>
+          <a href="./template-maintenance.html">模板入库</a>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // 检查清单可点击切换
+      document.querySelectorAll('.checklist li').forEach(item => {
+        item.addEventListener('click', () => {
+          item.classList.toggle('done');
+        });
+      });
+    </script>
+  </body>
+</html>
