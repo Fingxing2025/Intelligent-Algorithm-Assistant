@@ -1,68 +1,30 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import https from 'node:https';
 import { execFileSync } from 'node:child_process';
 import vm from 'node:vm';
 
-import dns from 'node:dns';
-
-function aiFetch(urlString, options = {}) {
-  return new Promise((resolve, reject) => {
-    const urlObj = new URL(urlString);
-    const transport = urlObj.protocol === 'https:' ? https : http;
-    const defaultPort = urlObj.protocol === 'https:' ? 443 : 80;
-
-    dns.resolve4(urlObj.hostname, (err, addresses) => {
-      if (err || !addresses || addresses.length === 0) {
-        reject(new Error(`无法解析域名 ${urlObj.hostname} 的 IPv4 地址：${err?.message || '未找到 A 记录'}`));
-        return;
-      }
-
-      const ip = addresses[0];
-      const headers = { ...(options.headers || {}), Host: urlObj.hostname };
-
-      const requestOptions = {
-        hostname: ip,
-        port: urlObj.port || defaultPort,
-        path: urlObj.pathname + urlObj.search,
-        method: (options.method || 'GET').toUpperCase(),
-        headers,
-        timeout: 120000,
-      };
-
-      const req = transport.request(requestOptions, (res) => {
-        const chunks = [];
-        res.on('data', (chunk) => chunks.push(chunk));
-        res.on('end', () => {
-          const rawBody = Buffer.concat(chunks).toString('utf8');
-          const response = {
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
-            _body: rawBody,
-            json() {
-              return JSON.parse(this._body);
-            },
-            text() {
-              return Promise.resolve(this._body);
-            },
-          };
-          resolve(response);
-        });
-      });
-
-      req.on('error', reject);
-      req.on('timeout', () => {
-        req.destroy();
-        reject(new Error(`连接超时：${urlString}`));
-      });
-
-      if (options.body) {
-        req.write(options.body);
-      }
-      req.end();
+async function aiFetch(urlString, options = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 180000);
+  try {
+    const response = await fetch(urlString, {
+      method: options.method || 'GET',
+      headers: options.headers || {},
+      body: options.body || undefined,
+      signal: controller.signal,
     });
-  });
+    const rawBody = await response.text();
+    return {
+      ok: response.ok,
+      status: response.status,
+      _body: rawBody,
+      json() { return JSON.parse(rawBody); },
+      text() { return Promise.resolve(rawBody); },
+    };
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 const workspaceRoot = path.resolve(process.cwd());
