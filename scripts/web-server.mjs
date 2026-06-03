@@ -28,7 +28,7 @@ function aiFetch(urlString, options = {}) {
         path: urlObj.pathname + urlObj.search,
         method: (options.method || 'GET').toUpperCase(),
         headers,
-        timeout: 30000,
+        timeout: 120000,
       };
 
       const req = transport.request(requestOptions, (res) => {
