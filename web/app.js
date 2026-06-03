@@ -42,7 +42,6 @@ const state = {
   selectedId: null,
   expandedKeys: new Set(),
   wrapCode: false,
-  collapseCode: true,
   recommendationResult: null,
   analysisImageDataUrl: '',
   analysisBusy: false,
@@ -63,7 +62,6 @@ const state = {
   analysisHistory: [],
 };
 
-const COLLAPSE_LINE_THRESHOLD = 32;
 
 const CPP_KEYWORDS = new Set([
   'alignas', 'alignof', 'asm', 'auto', 'break', 'case', 'catch', 'class', 'const', 'constexpr', 'consteval',
@@ -167,7 +165,6 @@ const elements = {
   resetView: document.querySelector('#reset-view'),
   expandAll: document.querySelector('#expand-all'),
   toggleWrap: document.querySelector('#toggle-wrap'),
-  toggleCollapse: document.querySelector('#toggle-collapse'),
   copyCode: document.querySelector('#copy-code'),
   // 用户模板选择与诊断
   userTemplateChoice: document.querySelector('#user-template-choice'),
@@ -1480,9 +1477,8 @@ function renderDetail() {
   renderTagList(elements.detailRisks, sel.risks || []);
   if (state.explanationTemplateId !== sel.id) resetTemplateExplanation(sel.id);
   const lc = countCodeLines(sel.code); elements.codeMeta.textContent = `${lc} 行`;
-  if (lc <= COLLAPSE_LINE_THRESHOLD) state.collapseCode = false;
   elements.detailCode.innerHTML = renderHighlightedCode(sel.code);
-  renderCodeBlockState(lc);
+  renderCodeBlockState();
 }
 
 function renderTagList(container, values) { container.innerHTML = ''; values.forEach(v => { const t = document.createElement('span'); t.className = 'tag-item'; t.textContent = v; container.appendChild(t); }); }
@@ -1499,16 +1495,11 @@ function preserveCppTokens(source) { const ts = []; const text = source.replace(
 function highlightCpp(code) { const { text, tokenStore } = preserveCppTokens(code); return escapeHtml(text).split(/(__TOKEN_\d+__)/g).map(seg => { const e = tokenStore.find(en => en.token === seg); if (e) return e.html; return seg.replace(/0x[\da-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|[A-Za-z_]\w*/g, (m, off, src) => { if (/^(0x[\da-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)$/.test(m)) return `<span class="token number">${m}</span>`; if (CPP_KEYWORDS.has(m)) return `<span class="token keyword">${m}</span>`; if (CPP_TYPES.has(m)) return `<span class="token type">${m}</span>`; if (/^\s*\(/.test(src.slice(off + m.length))) return `<span class="token function">${m}</span>`; return m; }); }).join(''); }
 function renderHighlightedCode(code) { return highlightCpp(normalizeCodeLineEndings(code)).split('\n').map((l, i) => `<span class="code-line"><span class="line-number">${i + 1}</span><span class="line-content">${l.length > 0 ? l : '&nbsp;'}</span></span>`).join(''); }
 
-function renderCodeBlockState(lc) {
+function renderCodeBlockState() {
   elements.codeBlock.classList.toggle('is-wrapped', state.wrapCode);
-  const sc = state.collapseCode && lc > COLLAPSE_LINE_THRESHOLD;
-  elements.codeBlock.classList.toggle('is-collapsed', sc);
   elements.toggleWrap.textContent = state.wrapCode ? '关闭换行' : '自动换行';
   elements.toggleWrap.classList.toggle('is-active', state.wrapCode);
-  const cc = lc > COLLAPSE_LINE_THRESHOLD;
-  elements.toggleCollapse.disabled = !cc;
-  elements.toggleCollapse.textContent = cc ? (sc ? '展开全部' : '折叠长代码') : '无需折叠';
-  elements.codeStatus.textContent = cc ? (sc ? `已折叠到前 ${COLLAPSE_LINE_THRESHOLD} 行` : '完整展示') : '完整展示';
+  elements.codeStatus.textContent = '源码展示';
 }
 
 function getSelectedTemplate() { return library.templates.find(t => t.id === state.selectedId) || null; }
@@ -1724,9 +1715,8 @@ if (hasAiPage && elements.diagnosisHistory) {
 
 if (elements.resetView) { elements.resetView.addEventListener('click', () => { state.keyword = ''; state.activeCategory = ''; state.selectedId = null; state.expandedKeys.clear(); elements.keyword.value = ''; render(); }); }
 if (elements.expandAll) { elements.expandAll.addEventListener('click', () => { expandAllBranches(); renderTree(); }); }
-if (elements.toggleWrap) { elements.toggleWrap.addEventListener('click', () => { state.wrapCode = !state.wrapCode; const s = getSelectedTemplate(); if (s) renderCodeBlockState(countCodeLines(s.code)); }); }
-if (elements.toggleCollapse) { elements.toggleCollapse.addEventListener('click', () => { const s = getSelectedTemplate(); if (!s) return; const lc = countCodeLines(s.code); if (lc > COLLAPSE_LINE_THRESHOLD) { state.collapseCode = !state.collapseCode; renderCodeBlockState(lc); } }); }
-if (elements.copyCode) { elements.copyCode.addEventListener('click', async () => { const s = getSelectedTemplate(); if (!s) return; try { await navigator.clipboard.writeText(s.code); elements.copyCode.textContent = '复制成功'; elements.copyCode.classList.add('is-success'); setTimeout(() => { elements.copyCode.textContent = '复制代码'; elements.copyCode.classList.remove('is-success'); renderCodeBlockState(countCodeLines(s.code)); }, 1200); } catch (e) { elements.copyCode.textContent = '复制失败'; elements.copyCode.classList.add('is-danger'); setTimeout(() => { elements.copyCode.textContent = '复制代码'; elements.copyCode.classList.remove('is-danger'); renderCodeBlockState(countCodeLines(s.code)); }, 1200); } }); }
+if (elements.toggleWrap) { elements.toggleWrap.addEventListener('click', () => { state.wrapCode = !state.wrapCode; renderCodeBlockState(); }); }
+if (elements.copyCode) { elements.copyCode.addEventListener('click', async () => { const s = getSelectedTemplate(); if (!s) return; try { await navigator.clipboard.writeText(s.code); elements.copyCode.textContent = '复制成功'; elements.copyCode.classList.add('is-success'); setTimeout(() => { elements.copyCode.textContent = '复制代码'; elements.copyCode.classList.remove('is-success'); renderCodeBlockState(); }, 1200); } catch (e) { elements.copyCode.textContent = '复制失败'; elements.copyCode.classList.add('is-danger'); setTimeout(() => { elements.copyCode.textContent = '复制代码'; elements.copyCode.classList.remove('is-danger'); renderCodeBlockState(); }, 1200); } }); }
 
 // 初始化
 state.recentTemplateIds = getStoredRecentTemplateIds();
