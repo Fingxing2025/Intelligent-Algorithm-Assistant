@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>答辩页 · 智能算法学习助手</title>
+  <link rel="stylesheet" href="./styles.css?v=20260603-defense" />
+  <style>
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body { font-family: "Noto Serif SC", "Source Han Serif SC", serif; }
+
+    .defense-shell {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── 左侧：提词器 ── */
+    .teleprompter {
+      display: flex;
+      flex-direction: column;
+      background: #1e1b17;
+      color: #e8dccf;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+
+    .teleprompter-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .teleprompter-header h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: rgba(232, 220, 207, 0.6);
+    }
+
+    .step-indicator {
+      display: flex;
+      gap: 3px;
+    }
+
+    .step-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .step-dot.active { background: var(--accent); }
+
+    .teleprompter-steps {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .teleprompter-step {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .teleprompter-step.active { display: flex; }
+
+    .teleprompter-step .step-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f5e6d0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-title .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .speech-bubble {
+      background: rgba(255,255,255,0.04);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 14px 18px;
+      font-size: 0.95rem;
+      line-height: 1.85;
+      color: #ddd6cc;
+    }
+
+    .speech-bubble strong {
+      color: #f5a97f;
+    }
+
+    .action-hints {
+      background: rgba(180, 79, 47, 0.08);
+      border: 1px solid rgba(180, 79, 47, 0.15);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .action-hints .hint-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(232, 220, 207, 0.5);
+      margin-bottom: 10px;
+    }
+
+    .action-hints ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .action-hints li {
+      font-size: 0.85rem;
+      color: #c4b5a1;
+      padding-left: 18px;
+      position: relative;
+      line-height: 1.55;
+    }
+
+    .action-hints li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .key-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(180, 79, 47, 0.15);
+      color: #f5a97f;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+
+    .teleprompter-controls {
+      padding: 12px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      gap: 10px;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .teleprompter-controls button {
+      flex: 1;
+      padding: 10px 0;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      color: #c4b5a1;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .teleprompter-controls button:hover {
+      background: rgba(255,255,255,0.1);
+      color: #f5e6d0;
+    }
+
+    .teleprompter-controls button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .step-time-hint {
+      font-size: 0.78rem;
+      color: rgba(232, 220, 207, 0.4);
+      text-align: right;
+    }
+
+    /* ── 右侧：展示面 ── */
+    .showcase-panel {
+      overflow-y: auto;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at top left, rgba(214, 133, 74, 0.25), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(72, 116, 138, 0.2), transparent 22%),
+        linear-gradient(135deg, #f8f4eb, #efe4d1 55%, #efece6);
+    }
+
+    .slide {
+      display: none;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 36px 80px;
+    }
+
+    .slide.active { display: block; }
+
+    /* ── Slide：标题页 ── */
+    .slide-title {
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    .slide-title .project-badge {
+      display: inline-block;
+      padding: 6px 18px;
+      border-radius: 24px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--accent-soft);
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .slide-title h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      margin: 0 0 20px;
+      line-height: 1.25;
+    }
+
+    .slide-title h1 span { color: var(--accent); }
+
+    .slide-title .slide-desc {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    .slide-title .slide-desc strong { color: var(--accent-strong); }
+
+    /* ── Slide：章节标题 ── */
+    .slide-section {
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    .slide-section .section-num {
+      font-size: 5rem;
+      font-weight: 800;
+      color: var(--accent-soft);
+      opacity: 0.5;
+      line-height: 1;
+    }
+
+    .slide-section h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 10px 0 16px;
+    }
+
+    .slide-section p {
+      font-size: 1.02rem;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── Slide cards ── */
+    .slide-pain-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .slide-pain-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px 20px;
+      text-align: center;
+    }
+
+    .slide-pain-card .pain-emoji { font-size: 2rem; margin-bottom: 8px; }
+    .slide-pain-card h4 { font-size: 0.95rem; font-weight: 700; margin: 0 0 6px; color: var(--text); }
+    .slide-pain-card p { font-size: 0.84rem; color: var(--muted); margin: 0; line-height: 1.55; }
+
+    .slide-compare-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .slide-compare-box {
+      border-radius: 18px;
+      padding: 28px 24px;
+      text-align: center;
+    }
+
+    .slide-compare-box.old {
+      background: rgba(130, 110, 90, 0.06);
+      border: 1px dashed var(--line);
+    }
+
+    .slide-compare-box.new {
+      background: var(--accent-soft);
+      border: 1px solid rgba(180, 79, 47, 0.18);
+    }
+
+    .slide-compare-box h4 { font-size: 1.05rem; font-weight: 700; margin: 0 0 8px; }
+    .slide-compare-box.old h4 { color: var(--muted); }
+    .slide-compare-box.new h4 { color: var(--accent); }
+
+    .slide-compare-box ul { list-style: none; padding: 0; margin: 0; text-align: left; display: inline-block; }
+    .slide-compare-box li { padding: 4px 0; font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+
+    .slide-cap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .slide-cap-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px 18px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide-cap-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .slide-cap-card:nth-child(1)::before { background: linear-gradient(90deg, #3a6b82, #5a9fb8); }
+    .slide-cap-card:nth-child(2)::before { background: linear-gradient(90deg, #7a5a28, #b8963e); }
+    .slide-cap-card:nth-child(3)::before { background: linear-gradient(90deg, #2f6b4f, #4da87a); }
+    .slide-cap-card:nth-child(4)::before { background: linear-gradient(90deg, #7a3f64, #b85a8a); }
+    .slide-cap-card:nth-child(5)::before { background: linear-gradient(90deg, #c06a2f, #e89a5a); }
+
+    .slide-cap-card .cap-emoji { font-size: 2rem; margin-bottom: 10px; }
+    .slide-cap-card h4 { font-size: 0.95rem; font-weight: 700; margin: 0 0 6px; color: var(--text); }
+    .slide-cap-card p { font-size: 0.82rem; color: var(--muted); margin: 0; line-height: 1.55; }
+
+    .slide-flow-row {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+      margin-top: 24px;
+    }
+
+    .slide-flow-step {
+      flex: 1;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 12px;
+      text-align: center;
+      position: relative;
+      z-index: 0;
+    }
+
+    .slide-flow-step + .slide-flow-step { margin-left: -6px; }
+
+    .slide-flow-step .flow-num {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .slide-flow-step h4 { font-size: 0.88rem; font-weight: 700; margin: 0 0 4px; color: var(--text); }
+    .slide-flow-step p { font-size: 0.78rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
+    .slide-ai-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .slide-ai-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px 14px;
+      text-align: center;
+    }
+
+    .slide-ai-card .ai-emoji { font-size: 1.8rem; margin-bottom: 8px; }
+    .slide-ai-card h4 { font-size: 0.88rem; font-weight: 700; margin: 0 0 4px; color: var(--text); }
+    .slide-ai-card p { font-size: 0.78rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
+    .slide-stats-bar {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .slide-stat-item {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 24px;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .slide-stat-item .stat-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+
+    .slide-stat-item .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+    .slide-loop-banner {
+      background: var(--accent-soft);
+      border: 1px solid rgba(180, 79, 47, 0.18);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      margin-top: 28px;
+    }
+
+    .slide-loop-banner .loop-icon { font-size: 3rem; margin-bottom: 12px; }
+    .slide-loop-banner h3 { font-size: 1.4rem; font-weight: 800; margin: 0 0 8px; color: var(--text); }
+    .slide-loop-banner p { font-size: 0.95rem; color: var(--muted); margin: 0; line-height: 1.7; }
+
+    .slide-thank {
+      text-align: center;
+      padding-top: 120px;
+    }
+
+    .slide-thank h2 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 0 0 20px;
+    }
+
+    .slide-thank .thank-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    /* ── Slide footer ── */
+    .slide-footer-bar {
+      position: fixed;
+      bottom: 0;
+      right: 24px;
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      z-index: 10;
+    }
+
+    .slide-footer-bar button {
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-strong);
+      color: var(--accent-strong);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.15s;
+      box-shadow: var(--shadow);
+    }
+
+    .slide-footer-bar button:hover {
+      background: var(--accent-soft);
+    }
+
+    .slide-page-num {
+      position: fixed;
+      bottom: 14px;
+      left: 24px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      z-index: 10;
+    }
+
+    @media (max-width: 960px) {
+      .defense-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .teleprompter {
+        max-height: 45vh;
+      }
+
+      .slide-ai-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .slide-flow-row {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .slide-flow-step + .slide-flow-step {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="defense-shell">
+
+  <!-- ═══════════════════════ 左侧：提词器 ═══════════════════════ -->
+  <aside class="teleprompter">
+    <div class="teleprompter-header">
+      <h2>提词器</h2>
+      <div class="step-indicator" id="stepDots">
+        <span class="step-dot active" data-step="0"></span>
+        <span class="step-dot" data-step="1"></span>
+        <span class="step-dot" data-step="2"></span>
+        <span class="step-dot" data-step="3"></span>
+        <span class="step-dot" data-step="4"></span>
+        <span class="step-dot" data-step="5"></span>
+        <span class="step-dot" data-step="6"></span>
+        <span class="step-dot" data-step="7"></span>
+        <span class="step-dot" data-step="8"></span>
+        <span class="step-dot" data-step="9"></span>
+      </div>
+    </div>
+
+    <div class="teleprompter-steps" id="teleprompterSteps">
+
+      <!-- Step 0: 标题 -->
+      <div class="teleprompter-step active" data-step="0">
+        <div class="step-title"><span class="step-num">0</span> 标题页</div>
+        <div class="step-time-hint">约 10 秒</div>
+        <div class="action-hints">
+          <div class="hint-label">做什么</div>
+          <ul>
+            <li>读出项目名称</li>
+            <li>稍作停顿，让评委看到标题</li>
+            <li>快速进入第一张内容页</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 1: 开场 -->
+      <div class="teleprompter-step" data-step="1">
+        <div class="step-title"><span class="step-num">1</span> 开场 —— 问题与定位</div>
+        <div class="step-time-hint">约 55 秒</div>
+        <div class="speech-bubble">
+          大家好，我这个项目叫<strong>"个性化算法学习助手"</strong>。<br><br>
+          作为一个<strong>算法竞赛学习者</strong>，我很清楚一件事：算法能力的提升需要长时间积累，在这个过程中，<strong>拥有自己的模板库是必须的</strong>。<br><br>
+          但在实际做题时，我遇到了一个具体的障碍：模板积累了不少，可真面对题目时，却很难快速判断它属于哪一类算法，没法第一时间调出对应模板。模板分散在本地文件夹里，翻找效率很低，也根本不知道这个模板适合什么题、有什么常见坑。<br><br>
+          所以我真正需要的是一个<strong>按照题意快速匹配模板、并且能讲解为什么适用</strong>的功能——不是让AI直接替我做题，而是把自己的模板库整理成<strong>可查询、可解释、可维护</strong>的学习系统。
+        </div>
+        <div class="action-hints">
+          <div class="hint-label">做什么</div>
+          <ul>
+            <li>点出四个关键词：<strong>查询、验证、诊断、维护</strong></li>
+          </ul>
+        </div>
+        <div><span class="key-tag">核心：围绕个人模板库的学习系统</span><span class="key-tag">AI是辅助，不是替代</span></div>
+      </div>
+
+      <!-- Step 2: 查询页 -->
+      <div class="teleprompter-step" data-step="2">
+        <div class="step-title"><span class="step-num">2</span> 算法查询页</div>
+        <div class="step-time-hint">约 1分10秒</div>
+        <div class="speech-bubble">
+          先看<strong>算法查询页</strong>，整个系统的主入口。<br><br>
+          左边是模板目录树——这里建立了<strong>展示层分类</strong>，按学习理解方式重新组织。我点开dijkstra模板，右侧可以看到<strong>人工分类路径、学习难度、适用题型、识别信号、常见风险</strong>。这些标签让模板从"一段代码"变成了<strong>"一个带解释的学习条目"</strong>。源码做了C++语法高亮，支持一键复制。还有专题快筛、名称过滤、最近查看和收藏。
+        </div>
+        <div class="action-hints">
+          <div class="hint-label">做什么</div>
+          <ul>
+            <li>切到<strong>算法查询页</strong></li>
+            <li>展开"图论"，点击 <strong>dijkstra+链式前向星</strong></li>
+            <li>逐一指出分类路径、难度、适用题型、识别信号、风险</li>
+            <li>展示源码高亮 + 专题快筛 + 名称过滤</li>
+          </ul>
+        </div>
+        <div><span class="key-tag">重点：标签让模板变成学习条目</span></div>
+      </div>
+
+      <!-- Step 3: AI讲解 -->
+      <div class="teleprompter-step" data-step="3">
+        <div class="step-title"><span class="step-num">3</span> AI 讲解</div>
+        <div class="step-time-hint">约 50秒</div>
+        <div class="speech-bubble">
+          看AI怎么参与——查询页里有<strong>"当前模板AI讲解"</strong>功能，<strong>按需触发</strong>，不是默认自动调。AI读取当前模板的标题、分类、标签和完整源码，自动识别算法，从<strong>核心思路、适用场景、识别信号、常见误区、阅读建议</strong>几个维度讲解。<br><br>
+          AI角色是<strong>"辅助解释模板"</strong>，不替代模板库。API Key只存在当前标签页session里，<strong>不会写入项目文件</strong>。
+        </div>
+        <div class="action-hints">
+          <div class="hint-label">做什么</div>
+          <ul>
+            <li>保持dijkstra选中，点击 <strong>"需要AI讲解"</strong></li>
+            <li>强调：<strong>按需触发，不是自动调用</strong></li>
+            <li>点击"生成当前模板讲解"，展示返回结果</li>
+          </ul>
+        </div>
+        <div><span class="key-tag">AI辅助理解，不替代</span><span class="key-tag">API Key仅存session</span></div>
+      </div>
+
+      <!-- Step 4: 题目分析 -->
+      <div class="teleprompter-step" data-step="4">
+        <div class="step-title"><span class="step-num">4</span> 题目AI分析 + 用户验证</div>
+        <div class="step-time-hint">约 1分10秒</div>
+        <div class="speech-bubble">
+          题目AI分析页解决更前置的问题——"连应该看哪个模板都不知道"。<br><br>
+          支持<strong>上传题目图片或粘贴截图</strong>，多模态模型理解题意、提取信号，从<strong>本地模板库</strong>中给出候选模板，而不是直接生成题解。<br><br>
+          关键设计：分析前可以先<strong>输入自己猜测的模板名</strong>。AI不仅推荐候选，还会<strong>判断我的选择是否正确</strong>，指出混淆概念——这是<strong>"我先判断，AI来验证"</strong>的互动模式。<br><br>
+          每次判断结果自动记录，用于后续学习诊断。
+        </div>
+        <div class="action-hints">
+          <div class="hint-label">做什么</div>
+          <ul>
+            <li>切到<strong>题目AI分析页</strong>，粘贴题目截图</li>
+            <li>在"你的模板选择"中输入猜测的模板名</li>
+            <li><strong>故意猜错</strong>来演示AI纠错</li>
+            <li>点击"调用模型分析"，展示验证结果</li>
+          </ul>
+        </div>
+        <div><span class="key-tag">先判断后验证</span><span class="key-tag">故意猜错演示纠错</span></div>
+      </div>
+
+      <!-- Step 5: 学习诊断 -->
+      <div class="teleprompter-step" data-step="5">
+        <div class="step-title"><span class="step-num">5</span> 学习诊断</div>
+        <div class="step-time-hint">约 45秒</div>
+        <div class="speech-bubble">
+          单次分析只能解决一道题，我需要<strong>持续追踪算法掌握情况</strong>。<br><br>
+          分析页下方有<strong>学习诊断面板</strong>，自动累计每次分析结果，按专题统计正确率——<strong>总分析次数、选择正确率、掌握专题数、薄弱专题数</strong>。每个专题有独立进度条，绿色掌握良好（>70%），红色需要加强（<50%）。<br><br>
+          点击<strong>"生成诊断报告"</strong>，AI生成了<strong>整体评估、强项、弱项、建议、趋势</strong>五部分报告，分析薄弱原因——<strong>概念混淆、推理断层还是迁移困难</strong>。<br><br>
+          这样"输入→分析→尝试→验证→诊断"就串成了完整的<strong>学习闭环</strong>。
+        </div>
+        <div class="action-hints">
+          <div class="hint-label">做什么</div>
+          <ul>
+            <li>滚动到学习诊断面板，展示四个统计卡片</li>
+            <li>展示各专题进度条</li>
+            <li>点击"生成诊断报告"</li>
+            <li>指出AI区分三种错误类型</li>
+          </ul>
+        </div>
+        <div><span class="key-tag">持续性学习追踪</span><span class="key-tag">AI区分三种错因</span></div>
+      </div>
+
+      <!-- Step 6: 模板入库 -->
+      <div class="teleprompter-step" data-step="6">
+        <div class="step-title"><span class="step-num">6</span> 模板维护闭环</div>
+        <div class="step-time-hint">约 40秒</div>
+        <div class="speech-bubble">
+          最后看模板维护能力。<br><br>
+          在模板入库页，粘贴C++代码或上传cpp文件，点击"智能分类"，AI判断这段代码最接近哪个专题，自动给出<strong>候选匹配、建议文件名和存放目录</strong>。<br><br>
+          点击"加入模板库"，直接<strong>写入本地模板库文件夹</strong>，查询列表同步刷新。加错了回到查询页选中，点"删除当前模板"即可，同时清理AI元数据。<br><br>
+          <strong>模板新增→分类→入库→查询→删除纠错</strong>，完整维护闭环。
+        </div>
+        <div class="action-hints">
+          <div class="hint-label">做什么</div>
+          <ul>
+            <li>切到模板入库页</li>
+            <li>粘贴C++代码，点击智能分类</li>
+            <li>点击"加入模板库"</li>
+            <li>切回查询页，找到入库模板 → 删除纠错</li>
+          </ul>
+        </div>
+        <div><span class="key-tag">网页内直接写文件</span></div>
+      </div>
+
+      <!-- Step 7: 总结 -->
+      <div class="teleprompter-step" data-step="7">
+        <div class="step-title"><span class="step-num">7</span> 总结收尾</div>
+        <div class="step-time-hint">约 30秒</div>
+        <div class="speech-bubble">
+          总结核心思路：<br><br>
+          我没有把AI用成"直接解题器"，而是让它分别在<strong>四个关键节点</strong>起作用——题目理解时定位候选模板、用户判断后验证选择、找到模板后讲解原理、积累数据后诊断薄弱环节。<br><br>
+          模板库是主体，AI是辅助，这让系统更稳定可控。<br><br>
+          整个项目形成了<strong>"输入→分析→尝试→验证→诊断→改进"</strong>的完整学习闭环，通过<strong>一键脚本启动</strong>，本地完整演示。谢谢大家。
+        </div>
+        <div class="action-hints">
+          <div class="hint-label">做什么</div>
+          <ul>
+            <li>回到标题页做总结</li>
+            <li>强调四个AI角色和完整闭环</li>
+            <li>说明一键启动</li>
+            <li>致谢，等待提问</li>
+          </ul>
+        </div>
+        <div><span class="key-tag">AI四角色</span><span class="key-tag">完整学习闭环</span><span class="key-tag">一键启动</span></div>
+      </div>
+
+      <!-- Step 8: AI角色总览 -->
+      <div class="teleprompter-step" data-step="8">
+        <div class="step-title"><span class="step-num">8</span> AI 四角色 · 数据总览</div>
+        <div class="step-time-hint">备选 / 用于回答问题</div>
+        <div class="speech-bubble">
+          这张是AI在项目中的四个角色和数据总览，可以在回答评委问题时快速切换到相应话题。<br><br>
+          AI的四个角色：<strong>题目理解、用户验证、模板讲解、分类维护与诊断</strong>。<br>
+          项目覆盖<strong>6+顶层专题、50+算法模板</strong>，具备<strong>5大功能模块</strong>（查询浏览、AI讲解、题目分析+验证、学习诊断、模板维护）。
+        </div>
+        <div class="action-hints">
+          <div class="hint-label">做什么</div>
+          <ul>
+            <li>根据评委提问灵活切换</li>
+            <li>可以指向具体AI角色卡片</li>
+            <li>可以引用数据（50+模板、5功能模块）</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 9: 致谢 -->
+      <div class="teleprompter-step" data-step="9">
+        <div class="step-title"><span class="step-num">9</span> 致谢</div>
+        <div class="step-time-hint">结束页</div>
+        <div class="speech-bubble">
+          以上是我的项目汇报。<br><br>
+          感谢各位老师的时间。如果对项目的任何部分有疑问，我很乐意进一步解释。
+        </div>
+      </div>
+    </div>
+
+    <div class="teleprompter-controls">
+      <button id="btnPrev">← 上一步</button>
+      <button id="btnNext" class="primary">下一步 →</button>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════ 右侧：展示面 ═══════════════════════ -->
+  <main class="showcase-panel" id="showcasePanel">
+
+    <!-- Slide 0: 标题页 -->
+    <div class="slide slide-title active" data-step="0">
+      <div class="project-badge">Personalized Algorithm Learning Assistant</div>
+      <h1>智能<span>算法</span>学习助手</h1>
+      <div class="slide-desc">
+        不直接替你做题，而是帮你<strong>快速匹配模板</strong>、<strong>验证算法判断</strong>、
+        <strong>理解算法原理</strong>、<strong>追踪学习进度</strong>——一个围绕你自己模板积累搭建的完整学习闭环系统。
+      </div>
+    </div>
+
+    <!-- Slide 1: 开场 -->
+    <div class="slide" data-step="1">
+      <div class="slide-section">
+        <div class="section-num">01</div>
+        <h2>问题与定位</h2>
+        <p>算法学习者的真实困境：模板散乱、查找低效、不会迁移、缺少追踪</p>
+      </div>
+      <div class="slide-pain-grid">
+        <div class="slide-pain-card">
+          <div class="pain-emoji">&#x1F4C2;</div>
+          <h4>模板散乱，查找低效</h4>
+          <p>几十个 cpp 文件分散在本地文件夹里，没有统一检索入口</p>
+        </div>
+        <div class="slide-pain-card">
+          <div class="pain-emoji">&#x2753;</div>
+          <h4>文件名看不出"怎么用"</h4>
+          <p>不知道适合什么题、有什么坑、和题目有什么关系</p>
+        </div>
+        <div class="slide-pain-card">
+          <div class="pain-emoji">&#x1F9E9;</div>
+          <h4>题 &rarr; 模板匹配靠直觉</h4>
+          <p>"这题好像见过"，缺少按题意快速匹配模板的工具</p>
+        </div>
+        <div class="slide-pain-card">
+          <div class="pain-emoji">&#x1F4CA;</div>
+          <h4>错在哪里说不清</h4>
+          <p>无法系统性追踪哪些算法类别上反复失误</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: 查询页 -->
+    <div class="slide" data-step="2">
+      <div class="slide-section">
+        <div class="section-num">02</div>
+        <h2>算法查询页</h2>
+        <p>分层分类树 + 关键词搜索 + 源码高亮 + 元信息标签</p>
+      </div>
+      <div class="slide-compare-row">
+        <div class="slide-compare-box old">
+          <h4>&#x274C; 传统方式</h4>
+          <ul>
+            <li>手动翻文件夹找模板</li>
+            <li>文件名和代码分离，无标签</li>
+            <li>做题时凭感觉选算法</li>
+            <li>做完题只知道对错</li>
+            <li>复习全靠自己回忆</li>
+          </ul>
+        </div>
+        <div class="slide-compare-box new">
+          <h4>&#x2705; 本系统</h4>
+          <ul>
+            <li>分类树 + 关键词搜索，秒定位</li>
+            <li>每个模板带适用题型/识别信号/风险</li>
+            <li>上传题目图片，AI推荐+验证选择</li>
+            <li>自动记录判断，按专题统计正确率</li>
+            <li>AI生成个性化诊断报告</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: AI讲解 -->
+    <div class="slide" data-step="3">
+      <div class="slide-section">
+        <div class="section-num">03</div>
+        <h2>AI 模板讲解</h2>
+        <p>按需触发 · 自动识别算法 · 六维讲解</p>
+      </div>
+      <div class="slide-cap-grid">
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F9E0;</div>
+          <h4>核心思路</h4>
+          <p>算法解决什么问题的本质逻辑</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F3AF;</div>
+          <h4>适用场景</h4>
+          <p>什么题型/数据范围下应该考虑</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F50D;</div>
+          <h4>识别信号</h4>
+          <p>题目中哪些关键词提示使用该算法</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x26A0;&#xFE0F;</div>
+          <h4>常见误区</h4>
+          <p>最容易踩的坑和边界条件</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F4D6;</div>
+          <h4>阅读建议</h4>
+          <p>源码应该从哪里看起、先看什么</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F4CB;</div>
+          <h4>算法识别</h4>
+          <p>自动识别模板对应的算法/数据结构</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: 题目分析 -->
+    <div class="slide" data-step="4">
+      <div class="slide-section">
+        <div class="section-num">04</div>
+        <h2>题目AI分析 + 用户验证</h2>
+        <p>多模态理解题意 &rarr; 本地模板库推荐 &rarr; 先判断再验证</p>
+      </div>
+      <div class="slide-cap-grid">
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F4F8;</div>
+          <h4>图片上传 / 截图粘贴</h4>
+          <p>支持上传题目图片或直接粘贴剪贴板截图</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F9E0;</div>
+          <h4>题意提取+信号识别</h4>
+          <p>多模态模型先理解题意再提取关键算法信号</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F4CB;</div>
+          <h4>候选模板推荐</h4>
+          <p>从本地模板库返回TOP候选，带置信度和推荐理由</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x2705;</div>
+          <h4>用户选择验证</h4>
+          <p>先猜个模板名，AI判断正误并指出混淆概念</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: 学习诊断 -->
+    <div class="slide" data-step="5">
+      <div class="slide-section">
+        <div class="section-num">05</div>
+        <h2>学习诊断与反馈</h2>
+        <p>自动累计 &rarr; 专题统计 &rarr; AI深度诊断报告</p>
+      </div>
+      <div class="slide-cap-grid">
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F4CA;</div>
+          <h4>正确率统计</h4>
+          <p>总分析次数、选择正确率实时展示</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F3AF;</div>
+          <h4>专题追踪</h4>
+          <p>按算法专题分开统计，进度条可视化</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F916;</div>
+          <h4>AI诊断报告</h4>
+          <p>整体评估、强项、弱项、建议、趋势五部分</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F9EA;</div>
+          <h4>错因分析</h4>
+          <p>区分概念混淆 / 推理断层 / 迁移困难</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: 模板入库 -->
+    <div class="slide" data-step="6">
+      <div class="slide-section">
+        <div class="section-num">06</div>
+        <h2>模板维护闭环</h2>
+        <p>粘贴代码 &rarr; AI分类 &rarr; 一键入库 &rarr; 查询删除</p>
+      </div>
+      <div class="slide-cap-grid">
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F9E0;</div>
+          <h4>AI 智能分类</h4>
+          <p>粘贴代码后AI自动判断它最接近哪个专题</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F4DD;</div>
+          <h4>建议文件名与目录</h4>
+          <p>AI自动推荐文件名和存放目录，可手动修改</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F4E5;</div>
+          <h4>一键写入模板库</h4>
+          <p>点击"加入模板库"直接写入本地文件夹</p>
+        </div>
+        <div class="slide-cap-card">
+          <div class="cap-emoji">&#x1F5D1;&#xFE0F;</div>
+          <h4>查询页直接删除</h4>
+          <p>误添加后可在查询页选中直接删除+清理元数据</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: 总结 -->
+    <div class="slide" data-step="7">
+      <div class="slide-section">
+        <div class="section-num">07</div>
+        <h2>总结</h2>
+        <p>AI在四个节点辅助，形成完整学习闭环</p>
+      </div>
+      <div class="slide-loop-banner">
+        <div class="loop-icon">&#x1F504;</div>
+        <h3>输入 &rarr; 分析 &rarr; 尝试 &rarr; 验证 &rarr; 诊断 &rarr; 改进</h3>
+        <p>先判断、再验证、后追踪 —— AI不是替代思考，而是辅助反思</p>
+      </div>
+      <div class="slide-flow-row" style="margin-top: 24px;">
+        <div class="slide-flow-step"><div class="flow-num">1</div><h4>提交题目</h4><p>上传图片</p></div>
+        <div class="slide-flow-step"><div class="flow-num">2</div><h4>主动判断</h4><p>输入模板名</p></div>
+        <div class="slide-flow-step"><div class="flow-num">3</div><h4>浏览对照</h4><p>对比候选</p></div>
+        <div class="slide-flow-step"><div class="flow-num">4</div><h4>追踪诊断</h4><p>AI生成报告</p></div>
+        <div class="slide-flow-step"><div class="flow-num">5</div><h4>持续维护</h4><p>入库纠错</p></div>
+      </div>
+    </div>
+
+    <!-- Slide 8: AI角色 + 数据 -->
+    <div class="slide" data-step="8">
+      <div class="slide-section">
+        <div class="section-num">08</div>
+        <h2>AI 在项目中的四个角色</h2>
+        <p>能力节点 + 模板库规模</p>
+      </div>
+      <div class="slide-ai-grid">
+        <div class="slide-ai-card">
+          <div class="ai-emoji">&#x1F4F8;</div>
+          <h4>题目理解</h4>
+          <p>多模态模型读取图片，推荐候选模板</p>
+        </div>
+        <div class="slide-ai-card">
+          <div class="ai-emoji">&#x2705;</div>
+          <h4>用户验证</h4>
+          <p>判断用户模板选择是否正确</p>
+        </div>
+        <div class="slide-ai-card">
+          <div class="ai-emoji">&#x1F4A1;</div>
+          <h4>模板讲解</h4>
+          <p>结合源码与标签自动识别并讲解</p>
+        </div>
+        <div class="slide-ai-card">
+          <div class="ai-emoji">&#x1F4CA;</div>
+          <h4>分类、维护与诊断</h4>
+          <p>入库分类建议+元数据补全+诊断报告</p>
+        </div>
+      </div>
+      <div class="slide-stats-bar">
+        <div class="slide-stat-item"><div class="stat-num">6+</div><div class="stat-label">顶层专题</div></div>
+        <div class="slide-stat-item"><div class="stat-num">50+</div><div class="stat-label">算法模板</div></div>
+        <div class="slide-stat-item"><div class="stat-num">4</div><div class="stat-label">AI 角色</div></div>
+        <div class="slide-stat-item"><div class="stat-num">5</div><div class="stat-label">功能模块</div></div>
+        <div class="slide-stat-item"><div class="stat-num">1 键</div><div class="stat-label">本地启动</div></div>
+      </div>
+    </div>
+
+    <!-- Slide 9: 致谢 -->
+    <div class="slide slide-thank" data-step="9">
+      <h2>感谢聆听</h2>
+      <p class="thank-desc">
+        智能算法学习助手<br />
+        本地一键启动 · 无外部依赖 · 数据由自己掌控
+      </p>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+(function() {
+  const TOTAL_STEPS = 10;
+  let current = 0;
+
+  const teleSteps = document.querySelectorAll('.teleprompter-step');
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.step-dot');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+
+  function showStep(n) {
+    n = Math.max(0, Math.min(TOTAL_STEPS - 1, n));
+    current = n;
+
+    teleSteps.forEach(el => el.classList.toggle('active', parseInt(el.dataset.step) === n));
+    slides.forEach(el => el.classList.toggle('active', parseInt(el.dataset.step) === n));
+    dots.forEach(el => el.classList.toggle('active', parseInt(el.dataset.step) === n));
+
+    // scroll showcase panel to top
+    document.getElementById('showcasePanel').scrollTop = 0;
+    // scroll teleprompter steps to top
+    const stepsContainer = document.getElementById('teleprompterSteps');
+    const activeStep = stepsContainer.querySelector('.teleprompter-step.active');
+    if (activeStep) {
+      activeStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  btnPrev.addEventListener('click', () => showStep(current - 1));
+  btnNext.addEventListener('click', () => showStep(current + 1));
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => showStep(parseInt(dot.dataset.step)));
+  });
+
+  // keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      showStep(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      showStep(current - 1);
+    }
+  });
+
+  // start at step 0
+  showStep(0);
+})();
+</script>
+
+</body>
+</html>
