@@ -1,5 +1,5 @@
 window.TEMPLATE_LIBRARY = {
-  "generatedAt": "2026-06-02T07:23:20.341Z",
+  "generatedAt": "2026-06-02T14:30:20.644Z",
   "total": 65,
   "summary": {
     "基础算法": 5,

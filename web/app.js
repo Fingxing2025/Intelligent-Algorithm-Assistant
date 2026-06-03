@@ -321,9 +321,9 @@ function createTemplateCatalog() {
 
 function escapeForHtml(value) {
   return String(value || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 function findTemplateByCandidate(candidate) {
@@ -1477,7 +1477,7 @@ function expandAllBranches() { const ft = getFilteredTemplates(); const tree = b
 
 function countCodeLines(code) { return normalizeCodeLineEndings(code).split('\n').length; }
 function normalizeCodeLineEndings(code) { return String(code || '').replace(/\r\n?/g, '\n'); }
-function escapeHtml(value) { return value.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>'); }
+function escapeHtml(value) { return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
 const CPP_TOKEN_PATTERN = /(^\s*#.*$)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\/\*[\s\S]*?\*\/)|(\/\/.*$)/gm;
 function storeTokenHtml(ts, html) { const t = `__TOKEN_${ts.length}__`; ts.push({ token: t, html }); return t; }
@@ -1619,8 +1619,8 @@ async function generateAiDiagnosisReport() {
     if (elements.diagnosisAiReportContent) {
       // 简单的 Markdown 转 HTML
       const html = reportText
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
         .replace(/## ([^\n]+)/g, '<h4>$1</h4>')
         .replace(/\n\n/g, '</p><p>')
         .replace(/^/, '<p>')
