@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>智能算法学习助手 · 项目展示</title>
-  <link rel="stylesheet" href="./styles.css?v=20260602-showcase" />
+  <link rel="stylesheet" href="./styles.css?v=20260603-showcase" />
   <style>
     html { height: auto; }
     body { overflow-x: hidden; overflow-y: auto; }
@@ -51,7 +51,7 @@
     .hero-block .hero-desc {
       font-size: 1.08rem;
       color: var(--muted);
-      max-width: 620px;
+      max-width: 660px;
       margin: 0 auto 28px;
       line-height: 1.8;
     }
@@ -110,7 +110,7 @@
       font-size: 0.98rem;
       color: var(--muted);
       line-height: 1.8;
-      max-width: 700px;
+      max-width: 720px;
       margin-bottom: 28px;
     }
 
@@ -132,10 +132,10 @@
     .pain-card h4 { font-size: 0.96rem; font-weight: 700; margin: 0 0 6px; color: var(--text); }
     .pain-card p { font-size: 0.86rem; color: var(--muted); margin: 0; line-height: 1.6; }
 
-    /* ── 4 Capability Cards ── */
+    /* ── 5 Capability Cards ── */
     .cap-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 18px;
     }
     .cap-card {
@@ -158,6 +158,7 @@
     .cap-card.c2::before { background: linear-gradient(90deg, #7a5a28, #b8963e); }
     .cap-card.c3::before { background: linear-gradient(90deg, #2f6b4f, #4da87a); }
     .cap-card.c4::before { background: linear-gradient(90deg, #7a3f64, #b85a8a); }
+    .cap-card.c5::before { background: linear-gradient(90deg, #c06a2f, #e89a5a); }
     .cap-card .cap-icon { font-size: 2.2rem; margin-bottom: 14px; }
     .cap-card h3 { font-size: 1.08rem; font-weight: 700; margin: 0 0 8px; color: var(--text); }
     .cap-card p { font-size: 0.88rem; color: var(--muted); margin: 0 0 16px; line-height: 1.7; }
@@ -181,11 +182,11 @@
     }
     .flow-step {
       flex: 1;
-      min-width: 160px;
+      min-width: 140px;
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 20px;
-      padding: 22px 16px;
+      padding: 22px 14px;
       text-align: center;
       position: relative;
       z-index: 0;
@@ -395,8 +396,9 @@
     <div class="badge">🧠 Personalized Algorithm Learning Assistant</div>
     <h1>智能<span>算法</span>学习助手</h1>
     <p class="hero-desc">
-      不直接替你做题，而是帮你<strong>快速匹配模板</strong>、<strong>深入理解算法原理</strong>、
-      <strong>持续维护个人知识库</strong>。<br />一个围绕你自己模板积累搭建的学习系统。
+      不直接替你做题，而是帮你<strong>快速匹配模板</strong>、<strong>验证算法判断</strong>、
+      <strong>理解算法原理</strong>、<strong>追踪学习进度</strong>。
+      <br />一个围绕你自己模板积累搭建的完整学习闭环系统。
     </p>
     <div class="hero-cta">
       <a class="cta-primary" href="./index.html">🚀 进入算法查询</a>
@@ -410,7 +412,7 @@
     <div class="section-label"><span class="label-icon">🎯</span> 问题背景</div>
     <h2>算法学习者的真实困境</h2>
     <p class="intro-text">
-      作为一个算法竞赛学习者，模板积累是长时间的过程。但当模板越来越多，真正做题时却常常卡在第一步——<strong>这道题到底该用哪个模板？</strong>
+      作为一个算法竞赛学习者，模板积累是长时间的过程。但当模板越来越多，真正做题时却常常卡在第一步——<strong>这道题到底该用哪个模板？</strong> 即使选对了，也很难系统性地追踪自己在哪些算法类别上反复出错。
     </p>
     <div class="pain-grid">
       <div class="pain-card">
@@ -429,9 +431,9 @@
         <p>面对新题，常常停留在"这题好像见过"的阶段，缺少按题意快速匹配模板的工具。</p>
       </div>
       <div class="pain-card">
-        <div class="pain-emoji">🔄</div>
-        <h4>积累越多，维护越难</h4>
-        <p>每学一个新算法就要手动分类、写注释、记笔记，久了就容易滞后甚至遗忘。</p>
+        <div class="pain-emoji">📊</div>
+        <h4>错在哪里说不清</h4>
+        <p>做完题只知道对错，无法系统性追踪自己在哪些算法类别上反复失误，缺少数据驱动的学习反馈。</p>
       </div>
     </div>
   </section>
@@ -439,7 +441,7 @@
   <!-- ═══════ 对比 ═══════ -->
   <section class="section">
     <div class="section-label"><span class="label-icon">🔄</span> 方案对比</div>
-    <h2>从"代码仓库"到"学习系统"</h2>
+    <h2>从"代码仓库"到"学习闭环系统"</h2>
     <div class="compare-row">
       <div class="compare-box old">
         <h4>❌ 传统方式</h4>
@@ -447,7 +449,7 @@
           <li>• 手动翻文件夹找模板</li>
           <li>• 文件名和代码分离，无标签</li>
           <li>• 做题时凭感觉选算法</li>
-          <li>• 新模板要手工分类存放</li>
+          <li>• 做完题只知道对错</li>
           <li>• 复习全靠自己回忆</li>
         </ul>
       </div>
@@ -456,18 +458,18 @@
         <ul>
           <li>• 分类树 + 关键词搜索，秒定位</li>
           <li>• 每个模板带适用题型/识别信号/风险</li>
-          <li>• 上传题目图片，AI 推荐候选模板</li>
-          <li>• 粘贴代码 → AI 分类 → 一键入库</li>
-          <li>• 收藏 + 最近查看，复习有迹可循</li>
+          <li>• 上传题目图片，AI推荐+验证你的选择</li>
+          <li>• 自动记录判断记录，按专题统计正确率</li>
+          <li>• AI生成个性化诊断报告，追踪薄弱环节</li>
         </ul>
       </div>
     </div>
   </section>
 
-  <!-- ═══════ 四大能力 ═══════ -->
+  <!-- ═══════ 五大能力 ═══════ -->
   <section class="section">
     <div class="section-label"><span class="label-icon">⚡</span> 核心能力</div>
-    <h2>四大功能，覆盖完整学习链路</h2>
+    <h2>五大功能，覆盖完整学习闭环</h2>
     <div class="cap-grid">
       <div class="cap-card c1">
         <div class="cap-icon">🔍</div>
@@ -487,13 +489,21 @@
       </div>
       <div class="cap-card c3">
         <div class="cap-icon">📸</div>
-        <h3>题目图片分析</h3>
-        <p>上传题目截图或粘贴，多模态模型先理解题意、提取信号，再从本地模板库推荐最匹配的候选模板。</p>
+        <h3>题目分析 + 用户验证</h3>
+        <p>上传题目截图或粘贴，多模态模型先理解题意、提取信号，再推荐候选模板。支持先输入你的判断，AI验证正确性。</p>
         <div class="cap-tags">
-          <span class="cap-tag">图片上传</span><span class="cap-tag">题意提取</span><span class="cap-tag">模板推荐</span><span class="cap-tag">联动详情</span>
+          <span class="cap-tag">图片上传</span><span class="cap-tag">模板推荐</span><span class="cap-tag">选择验证</span><span class="cap-tag">联动详情</span>
         </div>
       </div>
       <div class="cap-card c4">
+        <div class="cap-icon">📊</div>
+        <h3>学习诊断与反馈</h3>
+        <p>自动累计分析记录，按专题统计正确率。一键生成包含整体评估、强项、弱项、建议、趋势的 AI 深度诊断报告。</p>
+        <div class="cap-tags">
+          <span class="cap-tag">正确率统计</span><span class="cap-tag">专题追踪</span><span class="cap-tag">AI诊断报告</span><span class="cap-tag">错因分析</span>
+        </div>
+      </div>
+      <div class="cap-card c5">
         <div class="cap-icon">📥</div>
         <h3>网页内模板维护</h3>
         <p>粘贴代码 → AI 智能分类 → 自动建议文件名/目录 → 一键写入本地模板库。支持查询页直接删除纠错。</p>
@@ -507,27 +517,32 @@
   <!-- ═══════ 使用流程 ═══════ -->
   <section class="section">
     <div class="section-label"><span class="label-icon">🗺️</span> 使用流程</div>
-    <h2>三张页面 · 一条全链路</h2>
+    <h2>五步全链路 · 从题目到诊断</h2>
     <div class="flow-row">
       <div class="flow-step">
         <div class="flow-num">1</div>
-        <h4>📸 不确定方向</h4>
-        <p>题目 AI 分析页：上传图片 → 获取候选模板</p>
+        <h4>📸 提交题目</h4>
+        <p>上传图片 → 模型提取信号</p>
       </div>
       <div class="flow-step">
         <div class="flow-num">2</div>
-        <h4>🔍 浏览定位</h4>
-        <p>算法查询页：分类树 + 搜索 → 找到目标模板</p>
+        <h4>🤔 主动判断</h4>
+        <p>输入你认为的模板 → AI验证是否正确</p>
       </div>
       <div class="flow-step">
         <div class="flow-num">3</div>
-        <h4>💡 深入理解</h4>
-        <p>查看标签 + 按需触发 AI 讲解</p>
+        <h4>🔍 浏览对照</h4>
+        <p>查看候选模板详情 → 与自己的判断对比</p>
       </div>
       <div class="flow-step">
         <div class="flow-num">4</div>
+        <h4>📊 追踪诊断</h4>
+        <p>自动累计记录 → 按专题统计 → AI生成诊断报告</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
         <h4>📥 持续维护</h4>
-        <p>模板入库页：新增模板；查询页：纠正误添加</p>
+        <p>新模板入库；查询页纠正误添加</p>
       </div>
     </div>
   </section>
@@ -578,7 +593,7 @@
   <!-- ═══════ AI 角色 ═══════ -->
   <section class="section">
     <div class="section-label"><span class="label-icon">🤖</span> AI 参与方式</div>
-    <h2>AI 在三个节点辅助，不替代学习过程</h2>
+    <h2>AI 在四个节点辅助，不替代学习过程</h2>
     <div class="ai-grid">
       <div class="ai-card">
         <div class="ai-emoji">📸</div>
@@ -587,18 +602,33 @@
         <p>多模态模型读取图片，提取信号，从模板库推荐候选。</p>
       </div>
       <div class="ai-card">
+        <div class="ai-emoji">✅</div>
+        <h4>用户验证</h4>
+        <div class="ai-scene">题目 AI 分析页</div>
+        <p>判断用户的模板选择是否正确，指出混淆概念和错因。</p>
+      </div>
+      <div class="ai-card">
         <div class="ai-emoji">💡</div>
         <h4>模板讲解</h4>
         <div class="ai-scene">算法查询页内</div>
         <p>结合源码与标签，自动识别算法并生成多维讲解。</p>
       </div>
       <div class="ai-card">
-        <div class="ai-emoji">📥</div>
-        <h4>分类与维护</h4>
-        <div class="ai-scene">入库页 + CLI 脚本</div>
-        <p>判断新模板属于哪个专题，建议文件名和目录，补全元数据。</p>
+        <div class="ai-emoji">📊</div>
+        <h4>分类、维护与诊断</h4>
+        <div class="ai-scene">入库页 + 诊断面板</div>
+        <p>新模板分类建议、元数据补全、学习诊断报告生成。</p>
       </div>
     </div>
+  </section>
+
+  <!-- ═══════ 学习闭环 ═══════ -->
+  <section class="section">
+    <div class="section-label"><span class="label-icon">🔄</span> 完整学习闭环</div>
+    <h2>输入 → 分析 → 尝试 → 验证 → 诊断 → 改进</h2>
+    <p class="intro-text">
+      系统不只是"查模板"的工具。从上传题目图片开始，AI 提取信号推荐模板，用户先主动判断再由 AI 验证反馈，每次判断自动记录并按专题统计正确率，最终生成个性化诊断报告——形成<strong>"先判断、再验证、后追踪"</strong>的完整学习循环。
+    </p>
   </section>
 
   <!-- ═══════ 数据 ═══════ -->
@@ -615,8 +645,12 @@
         <div class="stat-label">算法模板</div>
       </div>
       <div class="stat-item">
+        <div class="stat-num">4</div>
+        <div class="stat-label">AI 角色</div>
+      </div>
+      <div class="stat-item">
         <div class="stat-num">5</div>
-        <div class="stat-label">AI 能力节点</div>
+        <div class="stat-label">功能模块</div>
       </div>
       <div class="stat-item">
         <div class="stat-num">1 键</div>
