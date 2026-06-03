@@ -1514,3 +1514,27 @@ button.is-danger {
 .diagnosis-ai-report-actions button:hover {
   background: rgba(180, 79, 47, 0.2);
 }
+
+/* ===== 历史记录单项删除 ===== */
+.diag-history-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.diag-history-delete {
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  border: 1px solid rgba(179, 72, 72, 0.28);
+  border-radius: 8px;
+  background: rgba(179, 72, 72, 0.08);
+  color: #8b2a2a;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.diag-history-delete:hover {
+  background: rgba(179, 72, 72, 0.18);
+  border-color: rgba(179, 72, 72, 0.4);
+}

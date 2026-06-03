@@ -574,6 +574,12 @@ function addAnalysisHistoryRecord(record) {
   persistAnalysisHistory();
 }
 
+function removeAnalysisHistoryRecord(index) {
+  if (index < 0 || index >= state.analysisHistory.length) return;
+  state.analysisHistory.splice(index, 1);
+  persistAnalysisHistory();
+}
+
 function clearAllAnalysisHistory() {
   state.analysisHistory = [];
   localStorage.removeItem(ANALYSIS_HISTORY_STORAGE_KEY);
@@ -746,7 +752,7 @@ function renderDiagnosis() {
     } else {
       const list = document.createElement('div');
       list.className = 'diagnosis-history-list';
-      diagnosis.recentHistory.forEach(record => {
+      diagnosis.recentHistory.forEach((record, recordIndex) => {
         const item = document.createElement('div');
         item.className = `diagnosis-history-item ${record.isCorrect ? 'is-correct' : 'is-wrong'}`;
         item.innerHTML = `
@@ -756,7 +762,10 @@ function renderDiagnosis() {
             <span>你选了：<strong>${escapeForHtml(record.userChoice || '未选')}</strong></span>
             <span>AI推荐：<strong>${escapeForHtml(record.aiTopTitle || '未知')}</strong></span>
           </div>
-          <small>${escapeForHtml(record.timestamp || '')}</small>
+          <div class="diag-history-meta">
+            <small>${escapeForHtml(record.timestamp || '')}</small>
+            <button type="button" class="diag-history-delete" data-history-index="${recordIndex}">删除</button>
+          </div>
         `;
         list.appendChild(item);
       });
@@ -1699,6 +1708,19 @@ if (hasAiPage && elements.userTemplateChoice) {
 if (hasAiPage && elements.runDiagnosis) { elements.runDiagnosis.addEventListener('click', () => { renderDiagnosis(); generateAiDiagnosisReport(); }); }
 if (hasAiPage && elements.regenerateDiagnosis) { elements.regenerateDiagnosis.addEventListener('click', () => generateAiDiagnosisReport()); }
 if (hasAiPage && elements.clearDiagnosis) { elements.clearDiagnosis.addEventListener('click', () => { if (window.confirm('确认清空所有分析历史记录？此操作不可撤销。')) { clearAllAnalysisHistory(); renderDiagnosis(); showActionToast('分析历史已清空'); } }); }
+
+// 历史记录单项删除（事件委托）
+if (hasAiPage && elements.diagnosisHistory) {
+  elements.diagnosisHistory.addEventListener('click', e => {
+    const deleteBtn = e.target.closest('.diag-history-delete');
+    if (!deleteBtn) return;
+    const index = parseInt(deleteBtn.getAttribute('data-history-index'), 10);
+    if (Number.isNaN(index)) return;
+    removeAnalysisHistoryRecord(index);
+    renderDiagnosis();
+    showActionToast('已删除该条记录');
+  });
+}
 
 if (elements.resetView) { elements.resetView.addEventListener('click', () => { state.keyword = ''; state.activeCategory = ''; state.selectedId = null; state.expandedKeys.clear(); elements.keyword.value = ''; render(); }); }
 if (elements.expandAll) { elements.expandAll.addEventListener('click', () => { expandAllBranches(); renderTree(); }); }
