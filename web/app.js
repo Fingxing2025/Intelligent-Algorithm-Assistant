@@ -902,6 +902,11 @@ async function analyzeProblemImage() {
         };
       })
       .filter(Boolean)
+      .sort((a, b) => {
+        const ca = typeof a.confidence === 'number' ? a.confidence : -1;
+        const cb = typeof b.confidence === 'number' ? b.confidence : -1;
+        return cb - ca;
+      })
       .slice(0, 5);
 
     state.recommendationResult = {
