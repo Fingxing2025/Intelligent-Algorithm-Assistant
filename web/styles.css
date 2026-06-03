@@ -1534,3 +1534,22 @@ button.is-danger {
   background: rgba(179, 72, 72, 0.18);
   border-color: rgba(179, 72, 72, 0.4);
 }
+
+.diag-history-toggle {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 0.88rem;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border: 1px solid rgba(180, 79, 47, 0.14);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.diag-history-toggle:hover {
+  background: rgba(180, 79, 47, 0.2);
+}

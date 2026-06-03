@@ -60,6 +60,7 @@ const state = {
   // 新功能：用户模板选择、分析历史与诊断
   userChoiceValidation: null,
   analysisHistory: [],
+  diagnosisHistoryCollapsed: true,
 };
 
 
@@ -747,9 +748,13 @@ function renderDiagnosis() {
     if (diagnosis.recentHistory.length === 0) {
       elements.diagnosisHistory.innerHTML = '<p class="helper">暂无分析记录。</p>';
     } else {
+      const maxVisible = state.diagnosisHistoryCollapsed ? 5 : diagnosis.recentHistory.length;
+      const visible = diagnosis.recentHistory.slice(0, maxVisible);
+
       const list = document.createElement('div');
       list.className = 'diagnosis-history-list';
-      diagnosis.recentHistory.forEach((record, recordIndex) => {
+      visible.forEach((record, visibleIndex) => {
+        const recordIndex = diagnosis.recentHistory.indexOf(record);
         const item = document.createElement('div');
         item.className = `diagnosis-history-item ${record.isCorrect ? 'is-correct' : 'is-wrong'}`;
         item.innerHTML = `
@@ -767,6 +772,20 @@ function renderDiagnosis() {
         list.appendChild(item);
       });
       elements.diagnosisHistory.appendChild(list);
+
+      if (diagnosis.recentHistory.length > 5) {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'diag-history-toggle';
+        toggleBtn.textContent = state.diagnosisHistoryCollapsed
+          ? `展开全部（${diagnosis.recentHistory.length} 条）`
+          : '收起';
+        toggleBtn.addEventListener('click', () => {
+          state.diagnosisHistoryCollapsed = !state.diagnosisHistoryCollapsed;
+          renderDiagnosis();
+        });
+        elements.diagnosisHistory.appendChild(toggleBtn);
+      }
     }
   }
 }
